@@ -1,2 +1,4 @@
 # .gitignore
 .env
+pomo_timer/__pycache__/
+app/__pycache__/
