@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+</head>
+
+<body>
+  <h4>POMO TIMER</h4>
+  <form action="" method="POST">
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field}}
+      {{ field.errors }}
+
+    {% endfor %}
+    <button type="submit">ログイン</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% csrf_token %}
+  </form>
+  
+</body>
+</html>
