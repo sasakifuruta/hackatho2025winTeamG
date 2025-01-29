@@ -1,10 +1,14 @@
-services:
-    db:
+services: #作成したいサービスの列挙
+    db: #サービス名
         container_name: MySQL
-        image: mysql:8.0
+        image: mysql:8.0 #Dockerのイメージ
+
+        #データをコンテナの外に保存するための設定項目
+        #ホストマシンにもデータを共有することでデータの永続性を可能にしている。
+        #コンテナのバックアップ
         volumes:
-            - db-store:/var/lib/mysql
-        environment:
+            - db-store:/var/lib/mysql #ホストディレクトリ：コンテナ内ディレクトリ
+        environment: #Dockerのコンテナ内で使用される環境変数を設定する。
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
             MYSQL_DATABASE: ${DB_NAME}
             MYSQL_USER: ${DB_USER}
@@ -12,8 +16,8 @@ services:
             TZ: 'Asia/Tokyo'
         env_file:
             - .env
-        ports:
-            - "3306:3306"
+        ports: #ホストマシンとDockerコンテナ間でのネットワークポートのマッピングを指定する。
+            - "3306:3306" #ホストマシンのポート番号：コンテナのポート番号
         healthcheck:
             test: mysqladmin ping
             interval: 15s
@@ -21,13 +25,17 @@ services:
 
     app:
         container_name: Django
-        build: .
+        #用意したDockerfileよりビルドする場合、buikd:へynlファイルが
+        #おいてあるディレクトリからDockerfileがおいてあるディレクトへの相対パスを記述
+        build: . 
+        #サービスコンテナが起動したときに実行するコマンドを指定する。
         command: python3 manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
         ports:
             - "8000:8000"
-        depends_on:
+        depends_on: #サービス間の依存関係を定義する。
+        #Docker Composeに指定したサービスが他の１つ以上のサービスに依存していることを伝えられる。
             db:
                 condition: service_healthy
         tty: true
