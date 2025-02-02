@@ -1,0 +1,20 @@
+.sec-btns {
+    display: flex;
+    justify-content: space-around;
+}
+
+.btn-week {
+    color: #000;
+    background-color: #AFDFF8;
+    border: 1px solid #000;
+}
+.btn-month {
+    color: #fff;
+    background-color: #308AF8;
+    border: 1px solid #000;
+}
+.btn-year {
+    color: #fff;
+    background-color: #0C2D8E;
+    border: 1px solid #000;
+}
