@@ -259,25 +259,29 @@ class LearningSummary(View):
                     'week_labels':json.dumps(labels)
                     })
         # ボタンを押した時
-        pprint(period)
         return self.get_chart(period)
         
         
     
     # ボタンを押した時の処理
     def get_chart(self, period):
+        logs_all, days = self.get_days()
         if period == 'week':
-            logs_all, days = self.get_days()
             day_logs = self.get_day_logs(logs_all, days)
             week_data = self.get_weekly_data(days, day_logs)
-            chart, chart_ratio, labels= self.conv_week_data(week_data)
+            chart, chart_ratio, labels= self.conv_week_data(week_data) # labelsはAPI取得時は使わない
         elif period == 'month':
-            logs_all, days = self.get_days()
             week_logs = self.get_week_logs(logs_all, days)
             month_data = self.get_monthly_data(week_logs)
             chart, chart_ratio = self.conv_month_data(month_data)
-            pprint(f'クラス内の週別{week_logs}')
-            pprint(f'クラス内の月間{month_data}')
+        elif period == 'year':
+            month_logs = self.get_month_logs(logs_all, days)
+            year_data = self.get_year_data(month_logs)
+            chart, chart_ratio = self.conv_year_data(year_data)
+            pprint(f'クラス内の月{month_logs}')
+            pprint(f'クラス内の年間{year_data}')
+            pprint(f'クラス内のchart{chart}')
+            pprint(f'クラス内のchart_ratio{chart_ratio}')
         else:
             return JsonResponse({"error": "periodが無効です"}, status=400)
         
@@ -322,9 +326,22 @@ class LearningSummary(View):
             week_num = day.isocalendar().week
             week_logs[f'{year_month}の{week_num}週目'] = [year_month, week_num, input_total, output_total]
         return week_logs
-        
-    
-    
+
+
+    def get_month_logs(self, logs_all, days):
+        # 月別データを取得
+        month_logs = {}
+        for day in days:
+            outputs = logs_all.filter(start_time__month=day.month, category__is_output=True)
+            output_total = sum(log.studied_time for log in outputs)
+            inputs = logs_all.filter(start_time__month=day.month, category__is_output=False)
+            input_total = sum(log.studied_time for log in inputs)
+            
+            year_month = day.strftime('%Y/%m')
+            month_logs[year_month] =[day.year, day.month, input_total, output_total]
+        return month_logs
+            
+
     def get_weekly_data(self, days, day_logs):
         # 週ごと日別データを取得
         week_data = {}
@@ -341,7 +358,7 @@ class LearningSummary(View):
                 ])
             week_data[week_range]['total'] += day_logs[day][0] + day_logs[day][1]
         return week_data
-    
+
     
     # 曜日を日本語に変換
     def conv_day_of_week(date):
@@ -367,6 +384,25 @@ class LearningSummary(View):
                 ])
             month_data[month]["total"] += week_input_total + week_output_total
         return month_data
+    
+    
+    def get_year_data(self, month_logs):
+        # 月ごと週別データを取得
+        year_data = {}
+        for month_item in month_logs.values():
+            year = month_item[0]
+            month = month_item[1]
+            month_input_total = month_item[2]
+            month_output_total = month_item[3]
+            
+            year_data.setdefault(year,{"months":[], "total":0})
+            year_data[year]['months'].append([
+                month, month_input_total,
+                month_output_total
+                ])
+            year_data[year]["total"] += month_input_total + month_output_total
+        pprint(f'年間月別{year_data}')
+        return year_data
     
     
     def conv_week_data(self, week_data):
@@ -422,5 +458,54 @@ class LearningSummary(View):
                 'output_ratio': sum(output_data) * 100 / value['total']
                 })
         return chart_data, chart_ratio
+    
+    
+    def conv_year_data(self, year_data):
+        chart_data = []
+        chart_ratio = []
+        start_month = self.get_start_month()
+    
+        for year, value in year_data.items():
+            input_data = [0 for _ in range(12)]
+            output_data = [0 for _ in range(12)]
+            for month in value['months']:
+                # month = [月, インプット時間, アウトプット時間]
+                if month[0] == start_month:
+                    input_data[0] = month[1]
+                    output_data[0] = month[2]
+                elif month[0] > start_month:
+                    input_data[month[0]-start_month] = month[1]
+                    output_data[month[0]-start_month] = month[2]
+                else:
+                    input_data[month[0]+12-start_month] = month[1]
+                    output_data[month[0]+12-start_month] = month[2]
+                chart_data.append({
+                'period': year,
+                'input_data': input_data,
+                'output_data': output_data,
+                'total': value['total'] // 60
+                })
+                chart_ratio.append({
+                'year': year,
+                'input_ratio': sum(input_data) * 100 / value['total'],
+                'output_ratio': sum(output_data) * 100 / value['total']
+                })
+        return chart_data, chart_ratio
+
+
+    def get_start_month(self):
+        # 開始月を取得
+        start_month_from_goal = Goal.objects.first()
+        start_month_from_log = Study_log.objects.order_by('created_at').first()
+        if start_month_from_goal:
+            # 目標テーブルにあれば
+            start_month = start_month_from_goal.start_month
+        elif start_month_from_log:
+            # 学習ログテーブルから一番最初に記録した月を取得
+            start_month = start_month_from_log.start_time.month
+        else:
+            # 閲覧している月を取得
+            start_month = datetime.now().month
+        return start_month
     
     

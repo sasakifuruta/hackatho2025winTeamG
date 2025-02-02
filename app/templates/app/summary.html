@@ -74,19 +74,8 @@
             chart.options.plugins.text = '合計：' + total + '時間';
             chart.update();
 
-            // デバックよう
-            // chartRatio.data.datasets[0].data = weekChartRatio[currentIdx].input_ratio;
-            // chartRatio.data.datasets[1].data = weekChartRatio[currentIdx].output_ratio;
-            // console.log('chartRatio.data.datasets:', chartRatio.data.datasets[0].data);
-            // console.log('weekChartRatio:', weekChartRatio);
-            // console.log('currentIdx:', currentIdx);
-            console.log('weekChartRatio[currentIdx]:', weekChartRatio[currentIdx].input_ratio);
-            chartRatio.data.datasets[0].data = weekChartRatio[currentIdx].input_ratio;
-            chartRatio.data.datasets[1].data = weekChartRatio[currentIdx].output_ratio;
-
-            console.log('chartRatio.data.labels', chartRatio.data.labels);
-            
-            
+            chartRatio.data.datasets[0].data = [weekChartRatio[currentIdx].input_ratio];
+            chartRatio.data.datasets[1].data = [weekChartRatio[currentIdx].output_ratio];
             chartRatio.update();
         }
         
@@ -211,6 +200,8 @@
                     chart.data.labels = ['月', '火', '水', '木', '金', '土', '日']
                 }else if(period=='month'){
                     chart.data.labels = Array.from({length: chartData[currentIdx].input_data.length}, (_, k) => `${k+1}週目`) //[1週目, 2週目, 3週目, 4週目]
+                }else if(period=='year'){
+                    chart.data.labels = Array.from({length: chartData[currentIdx].input_data.length}, (_, k) => `${k+1}月`)
                 }
                 graphTitle.textContent = chartData[currentIdx].period;
                 chart.data.datasets[0].data = chartData[currentIdx].input_data;
@@ -219,12 +210,9 @@
                 chart.options.plugins.text = '合計：' + total + '時間';
                 chart.update();
 
-                chartRatio.data.datasets[0].data = ratioData[currentIdx].input_ratio;
-                chartRatio.data.datasets[1].data = ratioData[currentIdx].output_ratio;
-                console.log('chartRatio.data',chartRatio.data.datasets[0].data)
-                console.log('ratioData',ratioData[currentIdx].input_ratio)
+                chartRatio.data.datasets[0].data = [ratioData[currentIdx].input_ratio];
+                chartRatio.data.datasets[1].data = [ratioData[currentIdx].output_ratio];
                 chartRatio.update();
-                
             }
         }
 
@@ -241,6 +229,13 @@
             fetchData("month")
         });
 
+        BtnYear = document.getElementById("btn-year");
+        console.log(BtnYear);
+        BtnYear.addEventListener("click", () => {
+            currentIdx = 0;
+            fetchData("year")
+        });
+
         // 矢印ボタンクリック時の処理
         prevBtn.addEventListener('click', (period) => {
             if (currentIdx > 0) {
@@ -248,9 +243,7 @@
                 if(isInitialData){
                     updateWeekChart();
                 }else {
-                    console.log('ボタンイベント');
                     updateChart(period);
-                    
                 }
             }
         });
