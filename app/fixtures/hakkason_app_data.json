@@ -1,0 +1,234 @@
+[
+{
+  "model": "app.user",
+  "pk": 1,
+  "fields": {
+    "name": "test_user1",
+    "email": "test+01@example.com",
+    "password": "test_user",
+    "created_at": "2025-01-22T04:23:02Z",
+    "updated_at": "2025-01-22T04:23:02Z"
+  }
+},
+{
+  "model": "app.timer",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "study": 25,
+    "rest": 5,
+    "created_at": "2025-01-22T04:25:06Z",
+    "updated_at": "2025-01-22T04:25:06Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 1,
+  "fields": {
+    "category": "ハッカソン",
+    "is_output": true,
+    "user": 1,
+    "created_at": "2025-01-22T04:23:38Z",
+    "updated_at": "2025-01-22T04:23:38Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 2,
+  "fields": {
+    "category": "LT会",
+    "is_output": true,
+    "user": 1,
+    "created_at": "2025-01-22T04:23:50Z",
+    "updated_at": "2025-01-22T04:23:50Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 3,
+  "fields": {
+    "category": "記事執筆",
+    "is_output": true,
+    "user": 1,
+    "created_at": "2025-01-22T04:24:19Z",
+    "updated_at": "2025-01-22T04:24:19Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 4,
+  "fields": {
+    "category": "ステップ",
+    "is_output": false,
+    "user": 1,
+    "created_at": "2025-01-22T04:24:32Z",
+    "updated_at": "2025-01-22T04:24:32Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 5,
+  "fields": {
+    "category": "講義",
+    "is_output": false,
+    "user": 1,
+    "created_at": "2025-01-22T04:24:41Z",
+    "updated_at": "2025-01-22T04:24:41Z"
+  }
+},
+{
+  "model": "app.category",
+  "pk": 6,
+  "fields": {
+    "category": "資格の勉強",
+    "is_output": false,
+    "user": 1,
+    "created_at": "2025-01-22T04:24:49Z",
+    "updated_at": "2025-01-22T04:24:49Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "studied_time": 30,
+    "start_time": "2025-01-01T16:30:00.268Z",
+    "end_time": "2025-01-01T17:00:00.659Z",
+    "created_at": "2025-01-25T16:34:17.930Z",
+    "updated_at": "2025-01-25T16:34:23.566Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "studied_time": 30,
+    "start_time": "2025-01-02T16:30:00.564Z",
+    "end_time": "2025-01-02T17:00:00.416Z",
+    "created_at": "2025-01-25T16:37:07.017Z",
+    "updated_at": "2025-01-25T16:37:15.666Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-03T16:00:00.766Z",
+    "end_time": "2025-01-03T17:00:00.080Z",
+    "created_at": "2025-01-25T16:38:54.934Z",
+    "updated_at": "2025-01-25T16:38:58.833Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 4,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-04T16:00:00.508Z",
+    "end_time": "2025-01-04T17:00:00.748Z",
+    "created_at": "2025-01-25T16:40:05.931Z",
+    "updated_at": "2025-01-25T16:40:10.093Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 5,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-05T16:00:00.134Z",
+    "end_time": "2025-01-05T17:00:00.298Z",
+    "created_at": "2025-01-25T16:41:15.981Z",
+    "updated_at": "2025-01-25T16:41:19.300Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 6,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-07T16:00:00.032Z",
+    "end_time": "2025-01-07T17:00:00.697Z",
+    "created_at": "2025-01-25T16:42:41.265Z",
+    "updated_at": "2025-01-25T16:42:45.082Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 7,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-09T16:00:00.396Z",
+    "end_time": "2025-01-09T17:00:00.798Z",
+    "created_at": "2025-01-25T16:44:51.865Z",
+    "updated_at": "2025-01-25T16:44:57.564Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 8,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-15T16:00:00.630Z",
+    "end_time": "2025-01-15T17:00:00.647Z",
+    "created_at": "2025-01-25T16:46:00.713Z",
+    "updated_at": "2025-01-25T16:46:04.123Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 9,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-15T16:00:00.030Z",
+    "end_time": "2025-01-15T17:00:00.511Z",
+    "created_at": "2025-01-25T16:46:54.713Z",
+    "updated_at": "2025-01-25T16:46:57.397Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 10,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-22T16:00:00.488Z",
+    "end_time": "2025-01-22T17:00:00.627Z",
+    "created_at": "2025-01-25T16:48:02.510Z",
+    "updated_at": "2025-01-25T16:48:07.010Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 11,
+  "fields": {
+    "category": 1,
+    "studied_time": 60,
+    "start_time": "2025-01-29T16:00:00.644Z",
+    "end_time": "2025-01-29T17:00:00.524Z",
+    "created_at": "2025-01-25T16:48:52.309Z",
+    "updated_at": "2025-01-25T16:48:56.239Z"
+  }
+},
+{
+  "model": "app.study_log",
+  "pk": 12,
+  "fields": {
+    "category": 4,
+    "studied_time": 40,
+    "start_time": "2025-01-29T17:00:00.644Z",
+    "end_time": "2025-01-29T17:40:00.524Z",
+    "created_at": "2025-01-29T16:48:52.309Z",
+    "updated_at": "2025-01-29T16:48:56.239Z"
+  }
+}
+]
