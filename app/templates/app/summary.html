@@ -65,9 +65,13 @@
             const graphTitle = document.getElementById('graph_title');
             const prevBtn = document.getElementById('prev_period');
             const nextBtn = document.getElementById('next_period');
-            let currentIdx = 0;
+            let currentIdx = 0; // < >を押すと増減する
+            if (currentIdx == 0){
+                prevBtn.style.visibility = "hidden";
+            }
             graphTitle.textContent = weekData[currentIdx].period;
             function updateWeekChart() {
+                // 画面アクセス時に表示する週間グラフ　<>を押したときに変更
                 graphTitle.textContent = weekData[currentIdx].period;
                 chart.data.datasets[0].data = weekData[currentIdx].input_data;
                 chart.data.datasets[1].data = weekData[currentIdx].output_data;
@@ -75,9 +79,26 @@
                 chart.options.plugins.title.text = '合計：' + total + '時間';
                 chart.update();
 
+                // 比率グラフ
                 chartRatio.data.datasets[0].data = [weekChartRatio[currentIdx].input_ratio];
                 chartRatio.data.datasets[1].data = [weekChartRatio[currentIdx].output_ratio];
                 chartRatio.update();
+
+                // <>ボタンの表示
+                if (currentIdx == 0 && currentIdx == weekData.length - 1) {
+                        prevBtn.style.visibility = "hidden";
+                        nextBtn.style.visibility = "hidden";
+                    }
+                    else if (currentIdx == 0) {
+                        prevBtn.style.visibility = "hidden";
+                        nextBtn.style.visibility = "visible";
+                    } else if (currentIdx == weekData.length - 1) {
+                        prevBtn.style.visibility = "visible";
+                        nextBtn.style.visibility = "hidden";
+                    } else {
+                        prevBtn.style.visibility = "visible";
+                        nextBtn.style.visibility = "visible";
+                    }
             }
 
 
@@ -192,9 +213,9 @@
 
             function updateChart(period) {
                 if (chartData.length > 0 && currentIdx >= 0 && currentIdx < chartData.length) {
-                    console.log("currentIdx:", currentIdx);
-                    console.log("chartData:", chartData);
-                    console.log("ratioData:", ratioData);
+                    // console.log("currentIdx:", currentIdx);
+                    // console.log("chartData:", chartData);
+                    // console.log("ratioData:", ratioData);
                     if (period == 'week') {
                         chart.data.labels = ['月', '火', '水', '木', '金', '土', '日']
                     } else if (period == 'month') {
@@ -255,11 +276,6 @@
                 if (currentIdx > 0) {
                     currentIdx--;
                     if (isInitialData) {
-                        if (currentIdx == 0) {
-                            prevBtn.style.visibility = "hidden";
-                        } else if (currentIdx < weekData.length - 1) {
-                            nextBtn.style.visibility = "visible";
-                        }
                         updateWeekChart();
                     } else {
                         updateChart(period);
@@ -270,11 +286,6 @@
                 if (currentIdx < weekData.length - 1) {
                     if (isInitialData) {
                         currentIdx++;
-                        if (currentIdx == weekData.length - 1) {
-                            nextBtn.style.visibility = "hidden";
-                        } else if (currentIdx > 0) {
-                            prevBtn.style.visibility = "visible";
-                        }
                         updateWeekChart();
                     }
                 }
@@ -285,10 +296,6 @@
                     }
                 }
             });
-
-            // prevBtn、nextBtn
-
-
 
         });
 
