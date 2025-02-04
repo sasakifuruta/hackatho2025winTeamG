@@ -31,7 +31,7 @@ services: #作成したいサービスの列挙
         #サービスコンテナが起動したときに実行するコマンドを指定する。
         command: python3 manage.py runserver 0.0.0.0:8000
         volumes:
-            - .:/code
+            - ./backend:/code
         ports:
             - "8000:8000"
         depends_on: #サービス間の依存関係を定義する。
