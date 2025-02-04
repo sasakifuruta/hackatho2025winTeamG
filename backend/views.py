@@ -131,7 +131,7 @@ class LearningSummary(View):
             week_data.setdefault(week_range, {'days':[], 'total':0})
             week_data[week_range]['days'].append([
                 day.strftime('%Y/%m/%d'),
-                conv_day_of_week(day),
+                self.conv_day_of_week(day),
                 day_logs[day][0], # インプット
                 day_logs[day][1] # アウトプット
                 ])
@@ -140,7 +140,7 @@ class LearningSummary(View):
 
     
     # 曜日を日本語に変換
-    def conv_day_of_week(date):
+    def conv_day_of_week(self,date):
         ja_week = ['月','火','水','木','金','土','日']
         week_num = date.isocalendar().weekday
         day = ja_week[week_num-1]
