@@ -185,6 +185,7 @@ class LearningSummary(View):
     
     
     def conv_week_data(self, week_data):
+        # 週間日別データの整形
         labels = ['月','火','水','木','金','土','日']
         chart_data = []
         chart_ratio = []
@@ -214,6 +215,7 @@ class LearningSummary(View):
     
     
     def conv_month_data(self, month_data):
+        # 月間週別データの整形
         chart_data = []
         chart_ratio = []
         for year_month, value in month_data.items():
@@ -240,6 +242,7 @@ class LearningSummary(View):
     
     
     def conv_year_data(self, year_data):
+        # 年間月別データの整形
         chart_data = []
         chart_ratio = []
         start_month = self.get_start_month()
