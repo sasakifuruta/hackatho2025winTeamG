@@ -1,0 +1,4 @@
+Django==5.0.5
+mysqlclient
+django-environ
+python-dateutil==2.9.0.post0
