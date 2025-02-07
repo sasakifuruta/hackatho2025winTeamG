@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView
+from .views import LearningSummary
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -12,4 +13,7 @@ urlpatterns = [
     path('home/', views.HomeView.as_view(), name='home'),
     path('signup/', views.Signup.as_view(), name='signup'),
     path('account/', views.update_profile, name='account'),
+    
+        path('summary', LearningSummary.as_view(), name='summary'),
+    path('summary/<str:period>', LearningSummary.as_view(), name='summary_api')
 ]   
