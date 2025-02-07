@@ -2,18 +2,17 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.models import AbstractUser
 
-
-class User(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
-    created_at = models.DateTimeField(default=timezone.now)
+class User(AbstractUser):
     updated_at = models.DateTimeField(default=timezone.now)
 
+    def save(self, *args, **kwargs):
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.name
+        return self.username
     
     
 class Timer(models.Model):

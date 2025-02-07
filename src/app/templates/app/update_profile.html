@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>update_profile</title>
+</head>
+<body>
+  <div>
+    <a href="{% url 'home' %}">←</a>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+
+    <div>
+      <label for="{{ form.username.id_for_label }}" >名前</label>
+      {{ form.username }}
+    </div>
+
+    <div>
+      <label for="{{ form.email.id_for_label }}">登録メールアドレス</label>
+      {{ form.email }}
+    </div>
+
+    <div>
+      <label for="{{ form.password.id_for_label }}">新規パスワード</label>
+      {{ form.password }}
+    </div>
+
+    <div>
+      <label for="{{ form.password_confirm.id_for_label }}">新規パスワード（確認用）</label>
+      {{ form.password_confirm }}
+    </div>
+
+    <button type="submit">変更</button>
+  </form>
+
+
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">ログアウト</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+</head>
+
+<body>
+  <h4>POMO TIMER</h4>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <div>
+      {{ form.non_field_errors }}
+    </div>
+
+    <div>
+      <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+      {{ form.username }}
+      <div>{{ form.username.errors }}</div>
+    </div>
+
+    <div>
+      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      {{ form.password }}
+      <div>{{ form.password.errors }}</div>
+    </div>
+
+
+    <button type="submit">ログイン</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+  <div>
+    <a href="{% url 'signup' %}">新規登録はこちら</a>
+  </div>
+  
+</body>
+</html>

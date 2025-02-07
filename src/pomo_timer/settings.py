@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'pomo_timer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,18 +70,36 @@ TEMPLATES = [
     },
 ]
 
+# session無効の場合に遷移させる
+LOGIN_URL = '/login/'  
+
+
+AUTH_USER_MODEL = 'app.User'
+
+
 WSGI_APPLICATION = 'pomo_timer.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+# 環境変数を読み込む
+env = environ.Env()
+
+# .env ファイルのパスを指定 (settings.py の 1つ上の階層)
+env_file = os.path.join(os.path.dirname(__file__), '..', '.env') 
+print(f"env_file>>>>>>>>::{os.path.abspath(env_file)}")
+
+# .env ファイルを読み込む
+environ.Env.read_env(env_file)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME', default='django-db'),
-        'USER': config('DB_USER', default='user'),
-        'PASSWORD': config('DB_PASSWORD', default='password'),
+        'NAME': env('DB_NAME', default='django-db'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
         'HOST': 'db',
         'PORT': '3306',
     }

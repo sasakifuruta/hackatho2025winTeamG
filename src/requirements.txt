@@ -1,4 +1,4 @@
 Django==5.0.5
 mysqlclient
-python-decouple==3.8
+django-environ
 python-dateutil==2.9.0.post0
