@@ -57,7 +57,7 @@ ROOT_URLCONF = 'pomo_timer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +69,13 @@ TEMPLATES = [
         },
     },
 ]
+
+# session無効の場合に遷移させる
+LOGIN_URL = '/login/'  
+
+
+AUTH_USER_MODEL = 'app.User'
+
 
 WSGI_APPLICATION = 'pomo_timer.wsgi.application'
 
