@@ -89,7 +89,6 @@ env = environ.Env()
 
 # .env ファイルのパスを指定 (settings.py の 1つ上の階層)
 env_file = os.path.join(os.path.dirname(__file__), '..', '.env') 
-print(f"env_file>>>>>>>>::{os.path.abspath(env_file)}")
 
 # .env ファイルを読み込む
 environ.Env.read_env(env_file)
