@@ -9,17 +9,30 @@
 <body>
   <h4>POMO TIMER</h4>
   <form action="" method="POST">
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-    {{ field}}
-      {{ field.errors }}
+    {% csrf_token %}
+    <div>
+      {{ form.non_field_errors }}
+    </div>
 
-    {% endfor %}
+    <div>
+      <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+      {{ form.username }}
+      <div>{{ form.username.errors }}</div>
+    </div>
+
+    <div>
+      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      {{ form.password }}
+      <div>{{ form.password.errors }}</div>
+    </div>
+
+
     <button type="submit">ログイン</button>
     <input type="hidden" name="next" value="{{ next }}" />
-    {% csrf_token %}
   </form>
+  <div>
+    <a href="{% url 'signup' %}">新規登録はこちら</a>
+  </div>
   
 </body>
 </html>
