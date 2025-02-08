@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signup</title>
-</head>
-<body>
-  <form method="post">
+{% extends "app/index.html" %}
+{% load static %}
+{% block content %}
+<form method="post">
     {% csrf_token %}
 
     <div>
@@ -40,5 +35,4 @@
   <div>
     <a href="{% url 'login' %}">ログイン画面にもどる</a>
   </div>
-</body>
-</html>
+  {% endblock content %}

@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>update_profile</title>
-</head>
-<body>
-  <div>
+{% extends "app/index.html" %}
+{% load static %}
+{% block content %}
+
+<div>
     <a href="{% url 'home' %}">←</a>
   </div>
   <form method="post">
@@ -40,5 +36,4 @@
     {% csrf_token %}
     <button type="submit">ログアウト</button>
   </form>
-</body>
-</html>
+{% endblock content %}

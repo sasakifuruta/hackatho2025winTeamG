@@ -1,0 +1,65 @@
+.clock-image{
+  width: 150px;
+  height: auto;
+  /* 画面全体が収まる */
+  object-fit: contain;
+  display: block;
+  margin:0 auto;
+}
+
+h1 {
+  color: var(--white) !important;
+}
+
+.form-error {
+  color: red;
+  margin-bottom: 1rem;
+}
+
+.form-field input {
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  color: var(--white);
+  background-color: var(--main_accent);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s; /* ホバー時の色の変化をスムーズに */
+}
+
+.btn-primary:hover {
+  background-color: var(--accent2);
+}
+
+.text {
+  color: var(--white);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.link {
+  text-decoration: underline;
+  color: var(--white);
+  cursor: pointer;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.link:hover {
+  color: var(--main_accent);
+}
+
+.div {
+  text-align: center;
+}

@@ -1,38 +1,44 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
-</head>
+{% extends "app/index.html" %}
+{% load static %}
 
-<body>
-  <h4>POMO TIMER</h4>
-  <form action="" method="POST">
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+  <img src="{% static 'images/313531 1.png' %}" alt="ストップウォッチの画像" class="clock-image">
+
+  <h1>POMO TIMER</h1>
+  <div action="" method="POST">
     {% csrf_token %}
-    <div>
+
+    <div class="form-error">
       {{ form.non_field_errors }}
     </div>
 
-    <div>
-      <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    <div class="form-field">
       {{ form.username }}
-      <div>{{ form.username.errors }}</div>
     </div>
 
-    <div>
-      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    <div class="error-message">
+      {{ form.username.errors }}
+    </div>
+
+    <div class="form-field">
       {{ form.password }}
-      <div>{{ form.password.errors }}</div>
+    </div>
+
+    <div class="error-message">
+      {{ form.password.errors }}
     </div>
 
 
-    <button type="submit">ログイン</button>
+    <button type="submit" class="btn-primary">ログイン</button>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
-  <div>
-    <a href="{% url 'signup' %}">新規登録はこちら</a>
+
+  <div class="div">
+    <span class="text">新規登録は</span>
+    <a href="{% url 'signup' %}" class="link">こちら</a>
   </div>
-  
-</body>
-</html>
+{% endblock content %}

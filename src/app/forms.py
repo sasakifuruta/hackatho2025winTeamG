@@ -34,12 +34,12 @@ class SignupForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
   username = forms.EmailField(
     max_length=100,
-    label="メールアドレス",
-    widget=forms.EmailInput(attrs={'autofocus':True})
+    label="",
+    widget=forms.EmailInput(attrs={'autofocus':True, 'placeholder': 'メールアドレス'})
   )
   password = forms.CharField(
-    label="パスワード",
-    widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'})
+    label="",
+    widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'placeholder': 'パスワード'})
   )
 
   error_messages = {
