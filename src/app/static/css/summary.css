@@ -1,11 +1,19 @@
-.container{
-    padding-top: 20px;
+/* 共通スタイル(index.cssに追加） */
+.content {
+    height: 100vh;
+    width: 90%;
+    max-width: 1024px;
+}
+
+.wrap{
+    width: 100%;
+    height: fit-content;
 }
 
 .sec-btns {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 30px;
+    margin: 30px 0 80px;
 }
 
 .sec-btns button {
@@ -13,6 +21,7 @@
     height: 45px;
     font-weight: bold;
 }
+
 button.btn_page_back{
     width: 20px;
     background: none;
@@ -41,9 +50,11 @@ button.btn_page_back{
 #chart{
     background-color: #fff;
 }
+
 #chart_ratio {
-    margin: -30px;
+    margin-top: 0em;
 }
+
 #prev_period, #next_period {
     background: none;
     border: none;
