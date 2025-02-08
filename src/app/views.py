@@ -275,7 +275,7 @@ class LearningSummary(View):
                     'period': week_range, 
                     'input_data': input_data,
                     'output_data': output_data,
-                    'total': value['total'] // 60,
+                    'total': round(value['total'] / 60, 1),
                     })
                 chart_ratio.append({
                     'week': week_range,
@@ -302,7 +302,8 @@ class LearningSummary(View):
                 'period': year_month,
                 'input_data': input_data,
                 'output_data': output_data,
-                'total': value['total'] // 60
+                # TODO: 小数点第一位まで
+                'total': round(value['total'] / 60, 1) 
                 })
             chart_ratio.append({
                 'month': year_month,
@@ -336,7 +337,7 @@ class LearningSummary(View):
                 'period': year,
                 'input_data': input_data,
                 'output_data': output_data,
-                'total': value['total'] // 60
+                'total': round(value['total'] / 60, 1),
                 })
                 chart_ratio.append({
                 'year': year,
