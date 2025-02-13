@@ -39,6 +39,10 @@ services: #作成したいサービスの列挙
         #Docker Composeに指定したサービスが他の１つ以上のサービスに依存していることを伝えられる。
             db:
                 condition: service_healthy
+        environment:
+            DJANGO_SETTINGS_MODULE: "pomo_timer.settings"
+            PYTHONPATH: "/code"
+        command: ["/code/entrypoint.sh"]
         tty: true
         stdin_open: true
 
