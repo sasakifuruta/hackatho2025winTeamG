@@ -25,11 +25,12 @@ services: #作成したいサービスの列挙
 
     app:
         container_name: Django
-        #用意したDockerfileよりビルドする場合、buikd:へynlファイルが
+        #用意したDockerfileよりビルドする場合、buikd:へymlファイルが
         #おいてあるディレクトリからDockerfileがおいてあるディレクトへの相対パスを記述
         build: . 
         #サービスコンテナが起動したときに実行するコマンドを指定する。
-        command: python3 manage.py runserver 0.0.0.0:8000
+        #command: python3 manage.py runserver 0.0.0.0:8000
+        #command: uwsgi --ini /code/uwsgi.ini
         volumes:
             - .:/code
         ports:
@@ -46,6 +47,7 @@ services: #作成したいサービスの列挙
         image: nginx:latest
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./backend/static:/code/static
         ports:
             - "80:80"
         depends_on:
