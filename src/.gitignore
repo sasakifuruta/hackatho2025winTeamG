@@ -2,3 +2,6 @@
 .env
 ./pomo_timer/__pycache__/
 ./app/migrations/__pycache__/
+.vscode/
+*.log
+Thumbs.db

@@ -6,39 +6,36 @@
 {% endblock %}
 
 {% block content %}
-  <img src="{% static 'images/313531 1.png' %}" alt="ストップウォッチの画像" class="clock-image">
+<div class="auth-container">
+  <img src="{% static 'images/timer-icon.png' %}" alt="タイマーのアイコン" class="clock-image">
 
   <h1>POMO TIMER</h1>
-  <div action="" method="POST">
+  <form action="" method="POST" novalidate>
     {% csrf_token %}
+    <!-- フォーム全体のエラー(def clean()) -->
+    {% include 'app/error_messages.html' with errors=form.non_field_errors %}
 
-    <div class="form-error">
-      {{ form.non_field_errors }}
-    </div>
-
-    <div class="form-field">
+    <div class="login-form">
       {{ form.username }}
     </div>
 
-    <div class="error-message">
-      {{ form.username.errors }}
-    </div>
+    <!-- cleaned_dataでのエラーメッセージ -->
+    {% include 'app/error_messages.html' with errors=form.username.errors %}
 
-    <div class="form-field">
+    <div class="login-form">
       {{ form.password }}
     </div>
 
-    <div class="error-message">
-      {{ form.password.errors }}
-    </div>
+    {% include 'app/error_messages.html' with errors=form.password.errors %}
 
 
-    <button type="submit" class="btn-primary">ログイン</button>
+    <button type="submit" class="btn-login">ログイン</button>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
 
-  <div class="div">
+  <div class="center-text">
     <span class="text">新規登録は</span>
     <a href="{% url 'signup' %}" class="link">こちら</a>
   </div>
+</div>
 {% endblock content %}

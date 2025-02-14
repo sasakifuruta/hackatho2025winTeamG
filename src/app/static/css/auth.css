@@ -1,56 +1,200 @@
+.auth-container {
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .clock-image{
-  width: 150px;
+  max-width: 220px;
+  width: auto;
   height: auto;
   /* 画面全体が収まる */
   object-fit: contain;
   display: block;
   margin:0 auto;
+  margin-bottom: var(--space-xs);
+}
+
+.account-image {
+  max-width: 120px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 1rem;
 }
 
 h1 {
   color: var(--white) !important;
+  font-size: var(--heading1) !important;
 }
 
-.form-error {
-  color: red;
-  margin-bottom: 1rem;
-}
-
-.form-field input {
-  margin-bottom: 0.5rem;
+/* loginフォーム */
+.login-form input {
+  margin-bottom: 0.75rem;
   width: 100%;
-  max-width: 400px;
+  /* max-width: 400px; */
+  font-size: var(--body);
+  height: 2.5rem;
+
+}
+
+/* signup,account変更画面 */
+.form-field {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.form-label {
+  color: var(--white);
+  font-size: var(--body);
+  font-weight: 500;
+  margin-right: 5.5rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  width: 18rem;
+}
+
+.form-input input {
+  font-size: var(--body);
+  height: 2.5rem;
 }
 
 .error-message {
-  color: red;
-  font-size: 0.875rem;
+  color: #FFD700;
+  font-size: var(--body);
+  font-weight: bold;
+  margin-left: 1rem;
+  display: block;
+  align-items: center;
+  height: 100%;
+  transform: translateY(-10%);
 }
 
-.btn-primary {
+.error-message p {
+  margin: 0;
+  color: #FFD700;
+}
+
+.global-messages {
+  color: #FFD700;
+  font-size: var(--body);
+  font-weight: bold;
+}
+
+/* global(成功メッセージ) */
+.success {
+  color: var(--gray_10); 
+}
+
+/* global(エラーメッセージ) */
+.error {
+  color: #FFD700;
+}
+
+/* loginボタン */
+.btn-login {
   margin-bottom: 0.5rem;
   width: 100%;
+  height: 2.5rem;
   max-width: 400px;
   color: var(--white);
   background-color: var(--main_accent);
+  font-size: var(--body);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-login:hover {
+  background-color: var(--accent2);
+}
+
+/* logout */
+.logout-form {
+  text-align: center;
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: var(--body);
+  text-decoration: underline;
+  cursor: pointer;
+  width: fit-content;
+  display: inline-block;
+  margin: 0 auto;
+  margin-right: 3rem;
+}
+
+.btn-logout:hover {
+  color: var(--main_accent);
+}
+
+/* account変更画面の戻るボタン */
+.btn-back {
+  position: absolute;
+  top: 0.5rem;
+  font-size: 2.5rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  background-color: transparent;
+  color: var(--white);
+}
+
+.btn-back:hover {
+  color: var(--main_accent);
+}
+
+/* signup,account変更画面の登録/変更ボタン */
+.btn-auth {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 0.5rem;
+  transform: translateX(-0.6rem);
+  width: 100%;
+  max-width: 100px;
+  height: 2.5rem;
+  color: var(--white);
+  background-color: var(--main_accent);
+  font-size: var(--body);
+  font-weight: 500;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s; /* ホバー時の色の変化をスムーズに */
 }
 
-.btn-primary:hover {
+.btn-auth:hover {
   background-color: var(--accent2);
 }
 
+/* login画面の’新規登録は’ */
 .text {
   color: var(--white);
   width: fit-content;
   margin: 0 auto;
+  font-size: var(--body);
 }
 
+/* login画面の’こちら’ */
 .link {
   text-decoration: underline;
   color: var(--white);
+  font-size: var(--body);
   cursor: pointer;
   width: fit-content;
   margin: 0 auto;
@@ -60,6 +204,21 @@ h1 {
   color: var(--main_accent);
 }
 
-.div {
+/* signup画面の’ログイン画面にもどる’ */
+.link-login {
+  text-decoration: underline;
+  color: var(--white);
+  font-size: var(--body);
+  cursor: pointer;
+  width: fit-content;
+  margin: 0 auto;
+  margin-left: 1.75rem;
+}
+
+.link-login:hover {
+  color: var(--main_accent);
+}
+
+.center-text {
   text-align: center;
 }

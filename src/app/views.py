@@ -6,9 +6,9 @@ import calendar
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView ,TemplateView
+from django.views.generic import CreateView #,TemplateView
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model, login,  update_session_auth_hash
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -34,11 +34,10 @@ def setting(request):
 
 
 # サインアップ
-# 処理後は'home'に遷移
 class Signup(CreateView):
     form_class = SignupForm
     template_name = 'app/signup.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('login')
 
     # サインアップ後にログイン状態を保持
     def form_valid(self, form):
@@ -54,11 +53,13 @@ class Login(LoginView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        next_url = self.request.GET.get('next', '/home/')
+        next_url = self.request.GET.get('next')
+        if not next_url:
+            next_url = '/home/'
         return redirect(next_url)
 
-class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'app/home.html'
+# class HomeView(LoginRequiredMixin, TemplateView):
+#     template_name = 'app/home.html'
 
 # TODO: 競合！！
 def home(request):
@@ -70,20 +71,23 @@ def home(request):
 def update_profile(request):
     if request.method == 'POST':
         form = AccountChangeForm(request.POST, instance=request.user)
-
+        
         if form.is_valid():
-            user = form.save(commit=False)
-
-            user.save()
-            update_session_auth_hash(request, user)
-
+            user = form.save()
+            update_session_auth_hash(request, user)  # パスワード変更後もログイン状態維持
             messages.success(request, "アカウント情報を更新しました。")
             return redirect('account')
+        else:
+            # フォーム全体のエラーメッセージ
+            messages.error(request, "入力内容にエラーがあります。修正してください。")
+            
     else:
         form = AccountChangeForm(instance=request.user)
-        # GET時は初期化して表示
     
-    return render(request, "app/update_profile.html", {"form":form})
+    return render(request, "app/update_profile.html", {
+        "form": form,
+        "messages": messages.get_messages(request)
+    })
 
 
         

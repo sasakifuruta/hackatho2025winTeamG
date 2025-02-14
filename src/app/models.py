@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     updated_at = models.DateTimeField(default=timezone.now)
