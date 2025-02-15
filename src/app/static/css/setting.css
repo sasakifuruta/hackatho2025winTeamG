@@ -1,0 +1,13 @@
+.category-container {
+  display: flex;
+  gap: 20px; /* カテゴリー間のスペース */
+}
+
+.category-list {
+  gap: 20px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+}
