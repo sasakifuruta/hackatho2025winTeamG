@@ -1,0 +1,323 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/summary.css' %}">
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+
+    <!-- chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <title>グラフ画面</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sec-btns">
+            <button type="button" class="btn-week">週間</button>
+            <button type="button" class="btn-month">月間</button>
+            <button type="button" class="btn-year">年間</button>
+        </div>
+
+        <!-- 週間グラフ -->
+        <section class="week">
+            <h1 class="text-center">
+                <button id="prev_week">&lt;</button>
+                <span id="week_title"></span>
+                <button id="next_week">&gt;</button>
+            </h1>
+            <canvas id="chart_week"></canvas>
+        </section>
+
+        <!-- 月間週別グラフ -->
+        <section class="month">
+            <h1 class="text-center" >
+                <button id="prev_month">&lt;</button>
+                <span id="month_title"></span>
+                <button id="next_month">&gt;</button>
+            </h1>
+            <canvas id="chart_month"></canvas>
+        </section>
+
+        <!-- 年間月別グラフ -->
+        <section class="year">
+            <h1 class="text-center">
+                <button id="prev_year">&lt;</button>
+                <span id="year_title"></span>
+                <button id="next_year">&gt;</button>
+            </h1>
+            <canvas id="chart_year"></canvas>
+        </section>
+
+        <canvas id="chart_ratio"></canvas>
+    </div>
+
+
+    <!-- 週間グラフ -->
+    <script id="week_data" type="application/json">
+        {{ week_chart|safe }}
+    </script>
+    <script>
+        const weekData = JSON.parse(document.getElementById('week_data').textContent);
+        const weekTitle = document.getElementById('week_title');
+        const prevWeekBtn = document.getElementById('prev_week');
+        const nextWeekBtn = document.getElementById('next_week');
+        let currentWeekIdx = 0;
+        weekTitle.textContent = weekData.chart_data[currentWeekIdx].week;
+        function updateWeekChart() {
+            weekTitle.textContent = weekData.chart_data[currentWeekIdx].week;
+            chartWeek.data.datasets[0].data = weekData.chart_data[currentWeekIdx].input_data;
+            chartWeek.data.datasets[1].data = weekData.chart_data[currentWeekIdx].output_data;
+            const total = weekData.chart_data[currentWeekIdx].total;
+            chartWeek.options.plugins.text = '合計：' + total + '時間';
+            chartWeek.update();
+        }
+        // ボタンクリック時の処理
+        prevWeekBtn.addEventListener('click', () => {
+            if (currentWeekIdx > 0) {
+                currentWeekIdx--;
+                updateWeekChart();
+            }
+        });
+        nextWeekBtn.addEventListener('click', () => {
+            if (currentWeekIdx < weekData.chart_data.length - 1) {
+                currentWeekIdx++;
+                updateWeekChart();
+            }
+        });
+
+        const ct1 = document.getElementById("chart_week");
+        const chartWeek = new Chart(ct1, {
+            type: 'bar',
+            data: {
+                labels: ['月', '火', '水', '木', '金', '土','日'],
+                datasets: [
+                    {
+                        label: 'インプット',
+                        data: weekData.chart_data[currentWeekIdx].input_data,
+                        backgroundColor: "rgba(175, 223, 248, 1)"
+                    }, {
+                        label: 'アウトプット',
+                        data: weekData.chart_data[currentWeekIdx].output_data,
+                        backgroundColor: "rgba(12, 45, 142, 1)"
+                    }
+                ]
+            },
+            options: {
+                maxBarThickness: 50,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '合計：' + weekData.chart_data[currentWeekIdx].total + '時間'
+                    },
+                }
+            }
+        });
+    </script>
+
+    <!-- 月間週別グラフ -->
+    <script id="month_data" type="application/json">
+        {{ month_chart|safe }}
+    </script>
+    <script>
+        const monthData = JSON.parse(document.getElementById('month_data').textContent);
+        const monthTitle = document.getElementById('month_title');
+        const prevMonthBtn = document.getElementById('prev_month');
+        const nextMonthBtn = document.getElementById('next_month');
+        let currentMonthIdx = 0;
+        monthTitle.textContent = monthData.chart_data[currentMonthIdx].month + '月';
+        function updateMonthChart() {
+            monthTitle.textContent = monthData.chart_data[currentMonthIdx].month + '月';
+            chartMonth.data.datasets[0].data = monthData.chart_data[currentMonthIdx].input_data;
+            chartMonth.data.datasets[1].data = monthData.chart_data[currentMonthIdx].output_data;
+            const total = monthData.chart_data[currentMonthIdx].total;
+            chartMonth.options.plugins.title.text = '合計：' + total + '時間';
+            chartMonth.update();
+        }
+        // ボタンクリック時の処理
+        prevMonthBtn.addEventListener('click', () => {
+            if (currentMonthIdx > 0) {
+                currentMonthIdx--;
+                console.log("aaaaaa");
+                updateMonthChart();
+            }
+        });
+        nextMonthBtn.addEventListener('click', () => {
+            if (currentMonthIdx < monthData.chart_data.length - 1) {
+                currentMonthIdx++;
+                console.log(currentMonthIdx);
+                updateMonthChart();
+            }
+        });
+        
+        const ct2 = document.getElementById("chart_month");
+        const chartMonth = new Chart(ct2, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: monthData.chart_data[currentMonthIdx].input_data.length}, (_, k) => `${k+1}週目`), //[1週目, 2週目, 3週目, 4週目]
+                datasets: [
+                    {
+                        label: 'インプット',
+                        data: monthData.chart_data[currentMonthIdx].input_data,
+                        backgroundColor: "rgba(175, 223, 248, 1)"
+                    }, {
+                        label: 'アウトプット',
+                        data: monthData.chart_data[currentMonthIdx].output_data,
+                        backgroundColor: "rgba(12, 45, 142, 1)"
+                    }
+                ]
+            },
+            options: {
+                maxBarThickness: 50,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '合計'+ monthData.chart_data[currentMonthIdx].total +'時間'
+                    },
+                }
+            }
+        });
+    </script>
+
+    <!-- 年間月別グラフ -->
+    <script id="year_data" type="application/json">
+        {{ year_chart|safe }}
+    </script>
+    <script>
+        const yearData = JSON.parse(document.getElementById('year_data').textContent);
+        const yearTitle = document.getElementById('year_title');
+        const prevYearBtn = document.getElementById('prev_year');
+        const nextYearBtn = document.getElementById('next_year');
+        let currentYearIdx = 0;
+        yearTitle.textContent = yearData.chart_data[currentYearIdx].year + '年';
+        function updateYearChart() {
+            yearTitle.textContent = yearData.chart_data[currentYearIdx].year + '年';
+            chartYear.data.datasets[0].data = yearData.chart_data[currentYearIdx].input_data;
+            chartYear.data.datasets[1].data = yearData.chart_data[currentYearIdx].output_data;
+            const total = yearData.chart_data[currentYearIdx].total;
+            chartYear.options.plugins.title.text = '合計：' + total + '時間';
+            chartYear.update();
+        }
+        // ボタンクリック時の処理
+        prevYearBtn.addEventListener('click', () => {
+            if (currentYearIdx > 0) {
+                currentYearIdx--;
+                updateYearChart();
+            }
+        });
+        nextYearBtn.addEventListener('click', () => {
+            if (currentYearIdx < yearData.chart_data.length - 1) {
+                currentYearIdx++;
+                updateYearChart();
+            }
+        });
+
+        const ct3 = document.getElementById("chart_year");
+        const chartYear = new Chart(ct3, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: yearData.chart_data[currentYearIdx].input_data.length}, (_, k) => `${k+1}月`),
+                datasets: [
+                    {
+                        label: 'インプット',
+                        data: yearData.chart_data[currentYearIdx].input_data,
+                        backgroundColor: "rgba(175, 223, 248, 1)"
+                    }, {
+                        label: 'アウトプット',
+                        data: yearData.chart_data[currentYearIdx].output_data,
+                        backgroundColor: "rgba(12, 45, 142, 1)"
+                    }
+                ]
+            },
+            options: {
+                maxBarThickness: 50,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '合計' + yearData.chart_data[currentYearIdx].total + '時間'
+                    },
+                }
+            }
+        });
+    </script>
+
+
+    <!-- 比率 -->
+    <script>
+        const ctx = document.getElementById("chart_ratio");
+        const chartRatio = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['インプット', 'アウトプット'],
+                datasets: [
+                    {
+                        label: 'インプット',
+                        data: [50],
+                        backgroundColor: [
+                            "rgba(175, 223, 248, 1)"
+                        ]
+                    },
+                    {
+                        label: 'アウトプット',
+                        data: [50],
+                        backgroundColor: [
+                            "rgba(12, 45, 142, 1)"
+                        ]
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                barThickness: 30,
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: false
+                    },
+                    y: {
+                        stacked: true,
+                        display: false
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        enabled: false
+                    },
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        color: "#fff",
+                        anchor: "center",
+                        align: "center",
+                        formatter: function (value, context) {
+                            const datasetLabel = context.chart.data.labels[context.datasetIndex];
+                            return datasetLabel + ' ' + value + '%';
+                        }
+                    }
+                },
+            },
+            plugins: [ChartDataLabels],
+        });
+    </script>
+
+</body>
+</html>

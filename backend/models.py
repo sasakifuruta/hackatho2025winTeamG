@@ -54,8 +54,8 @@ class Study_log(models.Model):
         self.save()
 
     def __str__(self):
-        return self.studied_time
-    
+        return f"{self.studied_time} "
+
 
 class Goal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
