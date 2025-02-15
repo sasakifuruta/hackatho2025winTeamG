@@ -1,38 +1,41 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
-</head>
+{% extends "app/index.html" %}
+{% load static %}
 
-<body>
-  <h4>POMO TIMER</h4>
-  <form action="" method="POST">
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <img src="{% static 'images/timer-icon.png' %}" alt="タイマーのアイコン" class="clock-image">
+
+  <h1>POMO TIMER</h1>
+  <form action="" method="POST" novalidate>
     {% csrf_token %}
-    <div>
-      {{ form.non_field_errors }}
-    </div>
+    <!-- フォーム全体のエラー(def clean()) -->
+    {% include 'app/error_messages.html' with errors=form.non_field_errors %}
 
-    <div>
-      <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    <div class="login-form">
       {{ form.username }}
-      <div>{{ form.username.errors }}</div>
     </div>
 
-    <div>
-      <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    <!-- cleaned_dataでのエラーメッセージ -->
+    {% include 'app/error_messages.html' with errors=form.username.errors %}
+
+    <div class="login-form">
       {{ form.password }}
-      <div>{{ form.password.errors }}</div>
     </div>
 
+    {% include 'app/error_messages.html' with errors=form.password.errors %}
 
-    <button type="submit">ログイン</button>
+
+    <button type="submit" class="btn-login">ログイン</button>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
-  <div>
-    <a href="{% url 'signup' %}">新規登録はこちら</a>
+
+  <div class="center-text">
+    <span class="text">新規登録は</span>
+    <a href="{% url 'signup' %}" class="link">こちら</a>
   </div>
-  
-</body>
-</html>
+</div>
+{% endblock content %}

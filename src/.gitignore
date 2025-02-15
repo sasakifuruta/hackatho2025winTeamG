@@ -4,3 +4,6 @@
 ./app/migrations/__pycache__/
 *.pyc
 __pycache__/
+.vscode/
+*.log
+Thumbs.db

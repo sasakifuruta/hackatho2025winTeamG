@@ -1,0 +1,9 @@
+
+{% if errors %}
+  <div class="error-message">
+    {% for error in errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+  
