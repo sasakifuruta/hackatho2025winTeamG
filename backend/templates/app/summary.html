@@ -23,6 +23,7 @@
 <body>
     <div class="container">
         <div class="sec-btns">
+            <button type="button" class="btn_page_back text-start" onclick="history.back()">←</button>
             <button type="button" class="btn-week" id="btn-week">週間</button>
             <button type="button" class="btn-month" id="btn-month">月間</button>
             <button type="button" class="btn-year" id="btn-year">年間</button>
@@ -54,226 +55,250 @@
     </script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 週間データ（初期表示）
-        let isInitialData = true;  // 初期データ表示中は true
-        const weekData = JSON.parse(document.getElementById('week_data').textContent);
-        const weekChartRatio = JSON.parse(document.getElementById('week_chart_ratio').textContent);
-        const weekLabel = JSON.parse(document.getElementById('week_labels').textContent);
+        document.addEventListener("DOMContentLoaded", function () {
+            // 週間データ（初期表示）
+            let isInitialData = true;  // 初期データ表示中は true
+            const weekData = JSON.parse(document.getElementById('week_data').textContent);
+            const weekChartRatio = JSON.parse(document.getElementById('week_chart_ratio').textContent);
+            const weekLabel = JSON.parse(document.getElementById('week_labels').textContent);
 
-        const graphTitle = document.getElementById('graph_title');
-        const prevBtn = document.getElementById('prev_period');
-        const nextBtn = document.getElementById('next_period');
-        let currentIdx = 0;
-        graphTitle.textContent = weekData[currentIdx].week;
-        function updateWeekChart() {
-            graphTitle.textContent = weekData[currentIdx].week;
-            chart.data.datasets[0].data = weekData[currentIdx].input_data;
-            chart.data.datasets[1].data = weekData[currentIdx].output_data;
-            const total = weekData[currentIdx].total;
-            chart.options.plugins.text = '合計：' + total + '時間';
-            chart.update();
-
-            chartRatio.data.datasets[0].data = [weekChartRatio[currentIdx].input_ratio];
-            chartRatio.data.datasets[1].data = [weekChartRatio[currentIdx].output_ratio];
-            chartRatio.update();
-        }
-        
-
-        const ct1 = document.getElementById("chart");
-        const chart = new Chart(ct1, {
-            type: 'bar',
-            data: {
-                labels: weekLabel,
-                datasets: [
-                    {
-                        label: 'インプット',
-                        data: weekData[currentIdx].input_data,
-                        backgroundColor: "rgba(175, 223, 248, 1)"
-                    }, {
-                        label: 'アウトプット',
-                        data: weekData[currentIdx].output_data,
-                        backgroundColor: "rgba(12, 45, 142, 1)"
-                    }
-                ]
-            },
-            options: {
-                maxBarThickness: 50,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: '合計：' + weekData[currentIdx].total + '時間'
-                    },
-                }
-            }
-        });
-        
-        const ctx = document.getElementById("chart_ratio");
-        const chartRatio = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['インプット', 'アウトプット'],
-                datasets: [
-                    {
-                        label: 'インプット',
-                        data: [weekChartRatio[currentIdx].input_ratio],
-                        backgroundColor: [
-                            "rgba(175, 223, 248, 1)"
-                        ],
-                        datalabels: {
-                            color: '#000',
-                        }
-                    },
-                    {
-                        label: 'アウトプット',
-                        data: [weekChartRatio[currentIdx].output_ratio],
-                        backgroundColor: [
-                            "rgba(12, 45, 142, 1)"
-                        ]
-                    }
-                ]
-            },
-            options: {
-                indexAxis: 'y',
-                barThickness: 30,
-                scales: {
-                    x: {
-                        stacked: true,
-                        display: false
-                    },
-                    y: {
-                        stacked: true,
-                        display: false
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        enabled: false
-                    },
-                    legend: {
-                        display: false
-                    },
-                    datalabels: {
-                        color: "#fff",
-                        anchor: "center",
-                        align: "center",
-                        formatter: function (value, context) {
-                            const datasetLabel = context.chart.data.datasets[context.datasetIndex].label;
-                            return datasetLabel + ' ' + value + '%';
-                        }
-                    }
-                },
-            },
-            plugins: [ChartDataLabels],
-        });
-
-        // ボタンを押したらAPIを取得しグラフを切り替え
-        let chartData = [];
-        let ratioData = [];
-        function fetchData(period) {
-            fetch(`/summary/${period}`)
-                .then(response => response.json())
-                .then(chart_data =>{
-                    if (typeof chart_data.chart === "string") {
-                        chart_data.chart = JSON.parse(chart_data.chart);
-                        chart_data.chart_ratio = JSON.parse(chart_data.chart_ratio);
-                    }
-                    chartData = chart_data.chart;
-                    ratioData = chart_data.chart_ratio
-                    isInitialData = false;
-                    updateChart(period);
-                    console.log(ratioData);
-                })
-                .catch(error => console.error("データ取得エラー: ", error)
-                )
-        }
-
-        function updateChart(period) {
-            if (chartData.length > 0 && currentIdx >= 0 && currentIdx < chartData.length) {
-                console.log("currentIdx:", currentIdx);
-                console.log("chartData:", chartData);
-                console.log("ratioData:", ratioData);
-                if (period=='week'){
-                    chart.data.labels = ['月', '火', '水', '木', '金', '土', '日']
-                }else if(period=='month'){
-                    chart.data.labels = Array.from({length: chartData[currentIdx].input_data.length}, (_, k) => `${k+1}週目`) //[1週目, 2週目, 3週目, 4週目]
-                }else if(period=='year'){
-                    chart.data.labels = Array.from({length: chartData[currentIdx].input_data.length}, (_, k) => `${k+1}月`)
-                }
-                graphTitle.textContent = chartData[currentIdx].period;
-                chart.data.datasets[0].data = chartData[currentIdx].input_data;
-                chart.data.datasets[1].data = chartData[currentIdx].output_data;
-                const total = chartData[currentIdx].total;
-                chart.options.plugins.text = '合計：' + total + '時間';
+            const graphTitle = document.getElementById('graph_title');
+            const prevBtn = document.getElementById('prev_period');
+            const nextBtn = document.getElementById('next_period');
+            let currentIdx = 0;
+            graphTitle.textContent = weekData[currentIdx].period;
+            function updateWeekChart() {
+                graphTitle.textContent = weekData[currentIdx].period;
+                chart.data.datasets[0].data = weekData[currentIdx].input_data;
+                chart.data.datasets[1].data = weekData[currentIdx].output_data;
+                const total = weekData[currentIdx].total;
+                chart.options.plugins.title.text = '合計：' + total + '時間';
                 chart.update();
 
-                chartRatio.data.datasets[0].data = [ratioData[currentIdx].input_ratio];
-                chartRatio.data.datasets[1].data = [ratioData[currentIdx].output_ratio];
+                chartRatio.data.datasets[0].data = [weekChartRatio[currentIdx].input_ratio];
+                chartRatio.data.datasets[1].data = [weekChartRatio[currentIdx].output_ratio];
                 chartRatio.update();
             }
-        }
 
 
-        BtnWeek = document.getElementById("btn-week");
-        BtnWeek.addEventListener("click", () => {
-            currentIdx = 0;
-            fetchData("week")
-        });
+            const ct1 = document.getElementById("chart");
+            const chart = new Chart(ct1, {
+                type: 'bar',
+                data: {
+                    labels: weekLabel,
+                    datasets: [
+                        {
+                            label: 'インプット',
+                            data: weekData[currentIdx].input_data,
+                            backgroundColor: "rgba(175, 223, 248, 1)"
+                        }, {
+                            label: 'アウトプット',
+                            data: weekData[currentIdx].output_data,
+                            backgroundColor: "rgba(12, 45, 142, 1)"
+                        }
+                    ]
+                },
+                options: {
+                    maxBarThickness: 50,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: '合計：' + weekData[currentIdx].total + '時間'
+                        },
+                    }
+                }
+            });
 
-        BtnMonth = document.getElementById("btn-month");
-        BtnMonth.addEventListener("click", () => {
-            currentIdx = 0;
-            fetchData("month")
-        });
+            const ctx = document.getElementById("chart_ratio");
+            const chartRatio = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['インプット', 'アウトプット'],
+                    datasets: [
+                        {
+                            label: 'インプット',
+                            data: [weekChartRatio[currentIdx].input_ratio],
+                            backgroundColor: "rgba(175, 223, 248, 1)",
+                            borderColor: "#fff",
+                            borderWidth: 2,
+                            datalabels: {
+                                color: '#000',
+                            }
+                        },
+                        {
+                            label: 'アウトプット',
+                            data: [weekChartRatio[currentIdx].output_ratio],
+                            backgroundColor: "rgba(12, 45, 142, 1)",
+                            borderColor: "#fff",
+                            borderWidth: 2,
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    barThickness: 30,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            display: false
+                        },
+                        y: {
+                            stacked: true,
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: false
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            color: "#fff",
+                            formatter: function (value, context) {
+                                const datasetLabel = context.chart.data.datasets[context.datasetIndex].label;
+                                return datasetLabel + ' ' + value + '%';
+                            }
+                        }
+                    },
+                },
+                plugins: [ChartDataLabels],
+            });
 
-        BtnYear = document.getElementById("btn-year");
-        console.log(BtnYear);
-        BtnYear.addEventListener("click", () => {
-            currentIdx = 0;
-            fetchData("year")
-        });
+            // ボタンを押したらAPIを取得しグラフを切り替え
+            let chartData = [];
+            let ratioData = [];
+            function fetchData(period) {
+                fetch(`/summary/${period}`)
+                    .then(response => response.json())
+                    .then(chart_data => {
+                        if (typeof chart_data.chart === "string") {
+                            chart_data.chart = JSON.parse(chart_data.chart);
+                            chart_data.chart_ratio = JSON.parse(chart_data.chart_ratio);
+                        }
+                        chartData = chart_data.chart;
+                        ratioData = chart_data.chart_ratio
+                        isInitialData = false;
+                        updateChart(period);
+                        console.log(ratioData);
+                    })
+                    .catch(error => console.error("データ取得エラー: ", error)
+                    )
+            }
 
-        // 矢印ボタンクリック時の処理
-        prevBtn.addEventListener('click', (period) => {
-            if (currentIdx > 0) {
-                currentIdx--;
-                if(isInitialData){
-                    updateWeekChart();
-                }else {
-                    updateChart(period);
+            function updateChart(period) {
+                if (chartData.length > 0 && currentIdx >= 0 && currentIdx < chartData.length) {
+                    console.log("currentIdx:", currentIdx);
+                    console.log("chartData:", chartData);
+                    console.log("ratioData:", ratioData);
+                    if (period == 'week') {
+                        chart.data.labels = ['月', '火', '水', '木', '金', '土', '日']
+                    } else if (period == 'month') {
+                        chart.data.labels = Array.from({ length: chartData[currentIdx].input_data.length }, (_, k) => `${k + 1}週目`) //[1週目, 2週目, 3週目, 4週目]
+                    } else if (period == 'year') {
+                        chart.data.labels = Array.from({ length: chartData[currentIdx].input_data.length }, (_, k) => `${k + 1}月`)
+                    }
+                    graphTitle.textContent = chartData[currentIdx].period;
+                    chart.data.datasets[0].data = chartData[currentIdx].input_data;
+                    chart.data.datasets[1].data = chartData[currentIdx].output_data;
+                    const total = chartData[currentIdx].total;
+                    chart.options.plugins.title.text = '合計：' + total + '時間';
+                    chart.update();
+
+                    chartRatio.data.datasets[0].data = [ratioData[currentIdx].input_ratio];
+                    chartRatio.data.datasets[1].data = [ratioData[currentIdx].output_ratio];
+                    chartRatio.update();
+
+                    if (currentIdx == 0 && currentIdx == chartData.length - 1) {
+                        prevBtn.style.visibility = "hidden";
+                        nextBtn.style.visibility = "hidden";
+                    }
+                    else if (currentIdx == 0) {
+                        prevBtn.style.visibility = "hidden";
+                        nextBtn.style.visibility = "visible";
+                    } else if (currentIdx == chartData.length - 1) {
+                        prevBtn.style.visibility = "visible";
+                        nextBtn.style.visibility = "hidden";
+                    } else {
+                        prevBtn.style.visibility = "visible";
+                        nextBtn.style.visibility = "visible";
+                    }
                 }
             }
-        });
-        nextBtn.addEventListener('click', (period) => {
-            if (currentIdx < weekData.length - 1) {
-                if(isInitialData){
-                    currentIdx++;
-                    console.log('初期データ更新')
-                    updateWeekChart();
+
+
+            BtnWeek = document.getElementById("btn-week");
+            BtnWeek.addEventListener("click", () => {
+                currentIdx = 0;
+                fetchData("week")
+            });
+
+            BtnMonth = document.getElementById("btn-month");
+            BtnMonth.addEventListener("click", () => {
+                currentIdx = 0;
+                fetchData("month")
+            });
+
+            BtnYear = document.getElementById("btn-year");
+            console.log(BtnYear);
+            BtnYear.addEventListener("click", () => {
+                currentIdx = 0;
+                fetchData("year")
+            });
+
+            // 矢印ボタンクリック時の処理
+            prevBtn.addEventListener('click', (period) => {
+                if (currentIdx > 0) {
+                    currentIdx--;
+                    if (isInitialData) {
+                        if (currentIdx == 0) {
+                            prevBtn.style.visibility = "hidden";
+                        } else if (currentIdx < weekData.length - 1) {
+                            nextBtn.style.visibility = "visible";
+                        }
+                        updateWeekChart();
+                    } else {
+                        updateChart(period);
+                    }
                 }
-            }
-            if(currentIdx < chartData.length - 1){
-                if(!isInitialData){
-                    currentIdx++;
-                    console.log('APIデータ更新')
-                    updateChart(period);
+            });
+            nextBtn.addEventListener('click', (period) => {
+                if (currentIdx < weekData.length - 1) {
+                    if (isInitialData) {
+                        currentIdx++;
+                        if (currentIdx == weekData.length - 1) {
+                            nextBtn.style.visibility = "hidden";
+                        } else if (currentIdx > 0) {
+                            prevBtn.style.visibility = "visible";
+                        }
+                        updateWeekChart();
+                    }
                 }
-            }
+                if (currentIdx < chartData.length - 1) {
+                    if (!isInitialData) {
+                        currentIdx++;
+                        updateChart(period);
+                    }
+                }
+            });
+
+            // prevBtn、nextBtn
+
+
+
         });
 
 
 
-    });
 
 
-    
 
-
-    
     </script>
 
 </body>
+
 </html>
