@@ -16,8 +16,8 @@ services: #作成したいサービスの列挙
             TZ: 'Asia/Tokyo'
         env_file:
             - .env
-        ports: #ホストマシンとDockerコンテナ間でのネットワークポートのマッピングを指定する。
-            - "3306:3306" #ホストマシンのポート番号：コンテナのポート番号
+        ports:
+            - "3307:3306"
         healthcheck:
             test: mysqladmin ping
             interval: 15s
@@ -34,9 +34,8 @@ services: #作成したいサービスの列挙
         volumes:
             - ./backend:/code
         ports:
-            - "8000:8000"
-        depends_on: #サービス間の依存関係を定義する。
-        #Docker Composeに指定したサービスが他の１つ以上のサービスに依存していることを伝えられる。
+            - "8001:8001"
+        depends_on:
             db:
                 condition: service_healthy
         tty: true
