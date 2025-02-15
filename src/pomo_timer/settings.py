@@ -70,6 +70,10 @@ TEMPLATES = [
     },
 ]
 
+# session無効の場合に遷移させるために必要
+LOGIN_URL = '/login/'  
+
+
 WSGI_APPLICATION = 'pomo_timer.wsgi.application'
 
 
