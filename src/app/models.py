@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     updated_at = models.DateTimeField(default=timezone.now)
@@ -18,13 +20,13 @@ class User(AbstractUser):
 class Timer(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    duration = models.IntegerField(default=25)
-    is_study = models.BooleanField(default=True)
+    study = models.IntegerField(default=25)
+    rest = models.IntegerField(default=5)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.duration} 分"
+        return f"{self.study} 分"
 
 
 class Category(models.Model):
@@ -53,8 +55,8 @@ class Study_log(models.Model):
         self.save()
 
     def __str__(self):
-        return self.studied_time
-    
+        return f"{self.studied_time} "
+
 
 class Goal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -1,27 +1,30 @@
 from pprint import pprint
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import calendar
+import logging
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView ,TemplateView
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import get_user_model, login,  update_session_auth_hash
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model, login,  update_session_auth_hash
+from django.views.generic import CreateView ,TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
+from django.urls import reverse_lazy
+from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models.functions import TruncDate
+from django.db.models import Sum
 
 
 from .models import User, Timer, Category, Study_log, Goal
 from .forms import LoginForm, SignupForm, AccountChangeForm
 
-
-
+logger = logging.getLogger(__name__) #エラーログの確認
 
 User = get_user_model()
 
@@ -29,16 +32,11 @@ def index(request):
     categories = Category.objects.all() 
     return render(request, 'app/index.html' , {'categories': categories})
 
-def setting(request):
-    return render(request, 'app/setting.html')
-
-
 # サインアップ
-# 処理後は'home'に遷移
 class Signup(CreateView):
     form_class = SignupForm
     template_name = 'app/signup.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('login')
 
     # サインアップ後にログイン状態を保持
     def form_valid(self, form):
@@ -54,11 +52,10 @@ class Login(LoginView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        next_url = self.request.GET.get('next', '/home/')
+        next_url = self.request.GET.get('next')
+        if not next_url:
+            next_url = '/home/'
         return redirect(next_url)
-
-class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = 'app/home.html'
 
 
 # アカウント更新   
@@ -66,20 +63,23 @@ class HomeView(LoginRequiredMixin, TemplateView):
 def update_profile(request):
     if request.method == 'POST':
         form = AccountChangeForm(request.POST, instance=request.user)
-
+        
         if form.is_valid():
-            user = form.save(commit=False)
-
-            user.save()
-            update_session_auth_hash(request, user)
-
+            user = form.save()
+            update_session_auth_hash(request, user)  # パスワード変更後もログイン状態維持
             messages.success(request, "アカウント情報を更新しました。")
             return redirect('account')
+        else:
+            # フォーム全体のエラーメッセージ
+            messages.error(request, "入力内容にエラーがあります。修正してください。")
+            
     else:
         form = AccountChangeForm(instance=request.user)
-        # GET時は初期化して表示
     
-    return render(request, "app/update_profile.html", {"form":form})
+    return render(request, "app/update_profile.html", {
+        "form": form,
+        "messages": messages.get_messages(request)
+    })
 
 
         
@@ -358,5 +358,249 @@ class LearningSummary(View):
             start_month = datetime.now().month
         return start_month
 
+# ===============
+# ホーム画面
+# ===============
+
+class HomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'app/home.html'
+
+    # ホーム画面に遷移した時にインプットかアウトプットに応じて、小カテゴリー一覧を取得して表示
+    # **kwargsは辞書型の可変長変数。
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        input_categories = Category.objects.filter(is_output=False, user=self.request.user)
+        context["input_categories"] = input_categories
+        
+        # 今日の日付を追加
+        context["today"] = date.today()
+
+        return context
+    
 
 
+# 勉強時間データの取得,ログイン時のみ
+@login_required 
+def get_study_time(request):
+    user = request.user
+    try:
+        timer = Timer.objects.get(user=user)
+        return JsonResponse({'study':timer.study})
+    except Timer.DoesNotExist:
+        return JsonResponse({'study':25})
+
+# 休憩時間データの取得,ログイン時のみ
+@login_required 
+def get_rest_time(request):
+    user = request.user
+    try:
+        timer = Timer.objects.get(user=user)
+        return JsonResponse({'rest':timer.rest})
+    except Timer.DoesNotExist:
+        return JsonResponse({'rest':5})
+
+# 累積勉強時間を追加
+@csrf_exempt
+def store_elapsed_time(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            elapsed = data.get("elapsed", 0)  # 経過時間（分）
+            category_id = data.get("category_id")  # カテゴリID
+            
+            if not category_id:
+                return JsonResponse({"error": "カテゴリIDが必要です"}, status=400)
+
+            category = Category.objects.get(id=category_id)
+
+            # Study_logに新しい記録を追加
+            now = timezone.now()
+            study_log = Study_log.objects.create(
+                category=category,
+                studied_time=int(elapsed),
+                start_time=now - timezone.timedelta(minutes=elapsed),
+                end_time=now
+            )
+
+            return JsonResponse({"message": "記録が保存されました", "studied_time": study_log.studied_time})
+        except Category.DoesNotExist:
+            return JsonResponse({"error": "カテゴリが見つかりません"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "POSTリクエストのみ対応しています"}, status=405)
+
+# 累積勉強時間を取得
+@login_required
+def get_timer_data(request):
+    user = request.user
+    categories = Category.objects.filter(user=user)
+
+    timer_data = {"input": {}, "output": {}}
+
+    for category in categories:
+        total_time = Study_log.objects.filter(category=category).aggregate(Sum('studied_time'))["studied_time__sum"] or 0
+        mode = "output" if category.is_output else "input"
+        timer_data[mode][category.category] = total_time  # カテゴリごとの累積時間を格納
+
+    return JsonResponse({"timerData": timer_data})
+
+# カテゴリーを取得する
+def get_categories(request):
+    mode = request.GET.get("mode", "input")  # デフォルトは "input"
+    user = request.user 
+    
+    if mode == "output":# "input" の場合 False, "output" の場合 True
+        is_output = True
+    else:
+        is_output = False 
+    
+    categories = Category.objects.filter(is_output=is_output, user = user)  # ユーザーのカテゴリを取得
+    
+    category_list = [{"id": cat.id, "name": cat.category} for cat in categories]
+
+    return JsonResponse({"categories": category_list})
+
+# グラフを更新
+def update_chart(request):
+    user = request.user
+    categories = Category.objects.filter(user=user)
+
+    timer_data = {"input": {}, "output": {}}
+
+    for category in categories:
+        total_time = Study_log.objects.filter(category=category).aggregate(Sum('studied_time'))["studied_time__sum"] or 0
+        mode = "output" if category.is_output else "input"
+        timer_data[mode][category.category] = total_time  # カテゴリごとの累積時間を格納
+    
+    data = {
+    "input": sum(timer_data["input"].values()),
+    "output": sum(timer_data["output"].values())
+    }
+    return JsonResponse(data)
+
+# ===============
+# 設定画面
+# ===============
+
+class SettingView(LoginRequiredMixin, TemplateView):
+    template_name = 'app/setting.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        input_categories = Category.objects.filter(is_output=False, user=self.request.user)
+        output_categories = Category.objects.filter(is_output=True, user=self.request.user)
+        context["input_categories"] = input_categories
+        context["output_categories"] = output_categories
+
+        context["test"] = date.today()
+
+        return context
+
+@csrf_exempt
+@login_required
+def add_category(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            category_name = data.get("category")
+            is_output = data.get("is_output", False)  # デフォルトは input (False)
+
+            if not category_name:
+                return JsonResponse({"success": False, "message": "カテゴリー名が空です。"}, status=400)
+
+            Category.objects.create(user=request.user, category=category_name, is_output=is_output)
+            return JsonResponse({"success": True, "message": "カテゴリーが追加されました！"})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "リクエストが不正です。"}, status=400)
+        except Exception as e:
+           return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
+
+@csrf_exempt
+@login_required
+def save_work_time(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            study_time = data.get("study")
+            user = request.user
+
+            if study_time is None:
+                return JsonResponse({"success": False, "message": "勉強時間が指定されていません。"}, status=400)
+            
+            # ユーザーのTimerデータを取得または作成
+            if not Timer.objects.filter(user=user).exists():
+                Timer.objects.create(user=user,study = study_time)
+                message = "勉強時間の設定が変更されました！"
+            else:
+                Timer.objects.filter(user=user).update(study = study_time,updated_at=timezone.now())
+                message = "勉強時間の設定が作成されました！"
+
+            return JsonResponse({"success": True, "message": message})
+        
+        except Exception as e:
+           return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
+
+@csrf_exempt
+@login_required
+def save_rest_time(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            rest_time = data.get("rest")
+            user = request.user
+
+            if rest_time is None:
+                return JsonResponse({"success": False, "message": "休憩時間が指定されていません。"}, status=400)
+            
+            # ユーザーのTimerデータを取得または作成
+            if not Timer.objects.filter(user=user).exists():
+                Timer.objects.create(user=user,rest = rest_time)
+                message = "休憩時間の設定が変更されました！"
+            else:
+                Timer.objects.filter(user=user).update(rest = rest_time,updated_at=timezone.now())
+                message = "休憩時間の設定が作成されました！"
+
+            return JsonResponse({"success": True, "message": message})
+        
+        except Exception as e:
+           return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
+
+# カテゴリー削除処理
+@login_required
+@csrf_exempt
+def delete_category(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            category_id = data.get("id")
+
+            # カテゴリーを取得
+            category = get_object_or_404(Category, id=category_id, user=request.user)
+
+            # そのカテゴリーの is_output を取得（True なら Output、False なら Input）
+            category_is_output = category.is_output
+
+            # 同じ is_output のカテゴリー数を取得
+            category_count = Category.objects.filter(user=request.user, is_output=category_is_output).count()
+
+            # もしカテゴリーが1つしかなければ削除を禁止
+            if category_count <= 1:
+                return JsonResponse({"success": False, "error": "カテゴリーは最低1つ必要です。"})
+
+            # カテゴリーを削除
+            category.delete()
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            logger.error(f"Category delete error: {str(e)}")
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Invalid request"})
