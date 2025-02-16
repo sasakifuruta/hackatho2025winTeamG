@@ -17,7 +17,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /code/
 
 # entrypoint.sh をコンテナにコピー
-COPY entrypoint.sh /code/entrypoint.sh
+COPY entrypoint.sh /code/entrypoint.sha
 
 # entrypoint.sh に実行権限を付与
 RUN chmod +x /code/entrypoint.sh

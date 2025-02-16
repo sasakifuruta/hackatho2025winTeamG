@@ -27,12 +27,13 @@ services: #作成したいサービスの列挙
         container_name: Django
         #用意したDockerfileよりビルドする場合、buikd:へymlファイルが
         #おいてあるディレクトリからDockerfileがおいてあるディレクトへの相対パスを記述
-        build: . 
+        build: .
         #サービスコンテナが起動したときに実行するコマンドを指定する。
         #command: python3 manage.py runserver 0.0.0.0:8000
         #command: uwsgi --ini /code/uwsgi.ini
         volumes:
             - .:/code
+            - ./entrypoint.sh:/code/entrypoint.sh
         ports:
             - "8000:8000"
         depends_on: #サービス間の依存関係を定義する。

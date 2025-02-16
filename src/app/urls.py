@@ -10,11 +10,7 @@ urlpatterns = [
     path('home/', views.HomeView.as_view(), name='home'),
     path('signup/', views.Signup.as_view(), name='signup'),
     path('account/', views.update_profile, name='account'),
-<<<<<<< HEAD
-]   
-=======
     
         path('summary', LearningSummary.as_view(), name='summary'),
     path('summary/<str:period>', LearningSummary.as_view(), name='summary_api')
 ]   
->>>>>>> d2512e3 (developをマージ)

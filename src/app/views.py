@@ -29,13 +29,10 @@ def index(request):
     categories = Category.objects.all() 
     return render(request, 'app/index.html' , {'categories': categories})
 
-<<<<<<< HEAD
-=======
 def setting(request):
     return render(request, 'app/setting.html')
 
 
->>>>>>> d2512e3 (developをマージ)
 # サインアップ
 # 処理後は'home'に遷移
 class Signup(CreateView):
@@ -54,8 +51,6 @@ class Signup(CreateView):
 class Login(LoginView):
     form_class = LoginForm
     template_name = 'app/login.html'
-<<<<<<< HEAD:src/app/views.py
-=======
 
     def form_valid(self, form):
         login(self.request, form.get_user())
@@ -365,4 +360,3 @@ class LearningSummary(View):
 
 
 
->>>>>>> 44d9386 (signup,login,logoutのバックエンド処理完了、レンダリング確認):app/views.py
