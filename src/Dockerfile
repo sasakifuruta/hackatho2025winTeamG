@@ -22,5 +22,11 @@ COPY entrypoint.sh /code/entrypoint.sha
 # entrypoint.sh に実行権限を付与
 RUN chmod +x /code/entrypoint.sh
 
+# 非rootユーザー作成
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# 非rootユーザーでコンテナを実行
+USER appuser
+
 # コンテナ起動時に entrypoint.sh を実行
 ENTRYPOINT ["/code/entrypoint.sh"]
