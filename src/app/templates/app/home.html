@@ -6,6 +6,7 @@
             <div class="multi-column">
                 <!-- 左側のテキスト -->
                 <div class="text-column">
+                    <span id="status-text" class="status">準備中</span>
                     <p id="countdown">--:--:--</p>
                     <button id="start-timer">作業開始</button>
                     <button id="pause-timer" disabled>一時停止</button>
@@ -19,15 +20,27 @@
                             <option value="output">アウトプット</option>
                         </select>
                     </div>
+                    <div class="category-select">
+                        <label for="category-select"></label>
+                        <select id="category-select">
+                            {% for category in input_categories %}<option value="{{ category.id }}">{{ category.category }}</option>{% endfor %}
+                        </select>
+                        <script src="{% static 'javascript/category.js' %}"></script>
+                    </div>
+                    <button id="stop-rest-timer" disabled>休憩終了</button>
                 </div>
                 <!-- 右側のグラフ -->
                 <div class="chart-column">
-                    <i class="fa-solid fa-chart-simple"></i>
+                    <a href="{% url 'summary' %}" class="icon">
+                        <i class="fa-solid fa-chart-simple"></i>
+                    </a>
                     <a href="{% url 'setting' %}" class="icon">
                         <i class="fa-solid fa-gear"></i>
                     </a>
-                    <i class="fa-solid fa-user"></i>
-                    <p class="text-center">2025年/1/25</p>
+                    <a href="{% url 'account' %}" class="icon">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <p class="text-center">{{ today }}</p>
                     <canvas id="chart-week" class="graph"></canvas>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                     <script src="{% static 'javascript/graph.js' %}"></script>
