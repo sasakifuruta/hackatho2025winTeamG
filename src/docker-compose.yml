@@ -34,6 +34,8 @@ services: #作成したいサービスの列挙
         volumes:
             - .:/code
             - /tmp:/tmp  # /tmp/uwsgi.sockを共有
+        environment:
+            - TZ=Asia/Tokyo
         ports:
             - "8000:8000"
         depends_on: #サービス間の依存関係を定義する。
