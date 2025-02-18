@@ -29,11 +29,13 @@ services: #作成したいサービスの列挙
         #おいてあるディレクトリからDockerfileがおいてあるディレクトへの相対パスを記述
         build: . 
         #サービスコンテナが起動したときに実行するコマンドを指定する。
-        command: python3 manage.py runserver 0.0.0.0:8000
+        # command: python3 manage.py runserver 0.0.0.0:8000
+        command: bash -c "apt-get update && apt-get install -y libpcre3 libpcre3-dev && uwsgi --ini /code/uwsgi.ini"
         volumes:
             - .:/code
+            - /tmp:/tmp  # /tmp/uwsgi.sockを共有
         ports:
-            - "800:8000"
+            - "8000:8000"
         depends_on: #サービス間の依存関係を定義する。
         #Docker Composeに指定したサービスが他の１つ以上のサービスに依存していることを伝えられる。
             db:
@@ -46,6 +48,8 @@ services: #作成したいサービスの列挙
         image: nginx:latest
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            - /tmp:/tmp  # Django コンテナ内の /tmp/uwsgi.sockを共有
+            - ./static:/code/static
         ports:
             - "80:80"
         depends_on:
