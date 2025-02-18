@@ -1,8 +1,5 @@
 # .gitignore
 .env
-./pomo_timer/__pycache__/
-./app/migrations/__pycache__/
-*.pyc
 __pycache__/
 .vscode/
 *.log
