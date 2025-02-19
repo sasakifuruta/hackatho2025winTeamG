@@ -1,10 +1,12 @@
 #!/bin/sh
+
+#エラー時にシェルスクリプトを自動的に中断する
 set -e
 
 cd /code
 
 # Django の環境変数を明示的に設定
-export DJANGO_SETTINGS_MODULE=pomo_timer.settings
+export DJANGO_SETTINGS_MODULE=pomo_timer.settings ###確認
 
 # 依存関係をインストール
 pip install --no-cache-dir -r requirements.txt

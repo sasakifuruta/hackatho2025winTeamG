@@ -34,12 +34,12 @@ services: #作成したいサービスの列挙
         volumes:
             - .:/code
         ports:
-            - "800:8000"
+            - "8000:8000"
         depends_on: #サービス間の依存関係を定義する。
         #Docker Composeに指定したサービスが他の１つ以上のサービスに依存していることを伝えられる。
             - db
         environment:
-            DJANGO_SETTINGS_MODULE: "pomo_timer.settings"
+            DJANGO_SETTINGS_MODULE: "pomo_timer.settings" ###　確認ポイント
             PYTHONPATH: "/code"
         command: ["/code/entrypoint.sh"]
         #tty: true
@@ -50,7 +50,7 @@ services: #作成したいサービスの列挙
         image: nginx:latest
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
-            - ./backend/static:/code/static
+            #- ./backend/static:/code/static ###動いた後に設定するでOK　疎通確認後に設定する
         ports:
             - "80:80"
         depends_on:

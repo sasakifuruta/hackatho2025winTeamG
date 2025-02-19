@@ -25,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d_pg$e_f(w@8-6@$21(@0$wdd=^k0%qwcri)ea#fb_)_9dev_p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#本番環境はFalse, 開発環境はTrueで設定。デプロイ直前にFalseに切り替える
+DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost']
+ALLOWED_HOSTS = [*]
+#ALLOWED_HOSTS = ['0.0.0.0','localhost']
 
 
 # Application definition
