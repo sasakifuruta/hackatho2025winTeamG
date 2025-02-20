@@ -1,0 +1,73 @@
+{% extends "app/index.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <a href="{% url 'home' %}" class="btn-back">←</a>
+
+  <img src="{% static 'images/account-icon.png' %}" alt="アカウント変更画面の人物アイコン" class="account-image">
+  
+  {% if messages %}
+    <div class="global-messages">
+      {% for message in messages %}
+        <div class="message {{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="form-field">
+      <label for="{{ form.username.id_for_label }}" class="form-label">名前
+      </label>
+      <div class="form-input">
+        {{ form.username }}
+      </div>
+      {% include 'app/error_messages.html' with errors=form.username.errors %}
+    </div>
+
+    <div class="form-field">
+      <label for="{{ form.email.id_for_label }}" class="form-label">登録メールアドレス
+      </label>
+      <div class="form-input">
+        {{ form.email }}
+      </div>
+      {% include 'app/error_messages.html' with errors=form.email.errors %}
+    </div>
+
+    <div class="form-field">
+      <label for="{{ form.password.id_for_label }}"  class="form-label">新規パスワード
+      </label>
+      <div class="form-input">
+        {{ form.password }}
+      </div>
+      {% include 'app/error_messages.html' with errors=form.password.errors %}
+    </div>
+
+    <div class="form-field">
+      <label for="{{ form.password_confirm.id_for_label }}" class="form-label">確認用パスワード
+      </label>
+      <div class="form-input">
+        {{ form.password_confirm }}
+      </div>
+      {% include 'app/error_messages.html' with errors=form.password_confirm.errors %}
+    </div>
+
+    <button type="submit" class="btn-auth">変更</button>
+  </form>
+
+
+  <form method="post" action="{% url 'logout' %}" class="logout-form">
+    {% csrf_token %}
+    <button type="submit" class="btn-logout">ログアウト</button>
+  </form>
+</div>
+{% endblock content %}

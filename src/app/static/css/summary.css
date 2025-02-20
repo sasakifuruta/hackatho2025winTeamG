@@ -1,0 +1,61 @@
+/* 共通スタイル(index.cssに追加） */
+.content {
+    height: 100vh;
+    width: 90%;
+    max-width: 1024px;
+}
+
+.wrap{
+    width: 100%;
+    height: fit-content;
+}
+
+.sec-btns {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px 0 80px;
+}
+
+.sec-btns button {
+    width: 20%;
+    height: 45px;
+    font-weight: bold;
+}
+
+button.btn_page_back{
+    width: 20px;
+    background: none;
+    border: none;
+    font-size: 2em;
+}
+
+.btn-week {
+    color: #000;
+    background-color: #AFDFF8;
+    border: 1px solid hsl(0, 0%, 0%);
+}
+
+.btn-month {
+    color: #fff;
+    background-color: #308AF8;
+    border: 1px solid #000;
+}
+
+.btn-year {
+    color: #fff;
+    background-color: #0C2D8E;
+    border: 1px solid #000;
+}
+
+#chart{
+    background-color: #fff;
+}
+
+#chart_ratio {
+    margin-top: 0em;
+}
+
+#prev_period, #next_period {
+    background: none;
+    border: none;
+}

@@ -1,0 +1,63 @@
+{% extends "app/index.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <a href="{% url 'home' %}" class="icon">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h2>作業時間の設定</h2>
+        <label for="work-time">作業時間を選択：</label>
+        <select id="work-time">
+            <option value="1">1分</option>
+            <option value="10">10分</option>
+            <option value="25" selected>25分</option>
+            <option value="40">40分</option>
+            <option value="60">60分</option>
+        </select>
+        <button id="save-work-time">保存</button>
+        <h2>休憩時間の設定</h2>
+        <label for="rest-time">休憩時間を選択：</label>
+        <select id="rest-time">
+            <option value="1">1分</option>
+            <option value="5" selected>5分</option>
+            <option value="10">10分</option>
+            <option value="30">30分</option>
+        </select>
+        <button id="save-rest-time">保存</button>
+        <h2>カテゴリーの追加</h2>
+        <label for="category-name">カテゴリー名：</label>
+        <input type="text" id="category-name" placeholder="新しいカテゴリー名">
+        <div>
+            <input type="radio"
+                   id="input-mode"
+                   name="category-mode"
+                   value="input"
+                   checked>
+            <label for="input-mode">Input</label>
+            <input type="radio" id="output-mode" name="category-mode" value="output">
+            <label for="output-mode">Output</label>
+        </div>
+        <button id="add-category">カテゴリーを追加</button>
+        <div calss="category-container">
+            <div class="category-list">
+                <h3>Input</h3>
+                {% for input_category in input_categories %}
+                    <div class="category-item" data-id="{{ input_category.id }}">
+                        <p>{{ input_category.category }}</p>
+                        <button class="delete-category">削除</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="category-list">
+                <h3>Output</h3>
+                {% for output_category in output_categories %}
+                    <div class="category-item" data-id="{{ output_category.id }}">
+                        <p>{{ output_category.category }}</p>
+                        <button class="delete-category">削除</button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'javascript/setting.js' %}"></script>
+{% endblock content %}

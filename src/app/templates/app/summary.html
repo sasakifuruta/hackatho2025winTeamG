@@ -1,0 +1,39 @@
+{% extends "app/index.html" %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/summary.css' %}">
+    <div class="wrap">
+        <div class="sec-btns">
+            <button type="button" class="btn_page_back text-start text-white" onclick="history.back()">←</button>
+            <button type="button" class="btn-week" id="btn-week">週間</button>
+            <button type="button" class="btn-month" id="btn-month">月間</button>
+            <button type="button" class="btn-year" id="btn-year">年間</button>
+        </div>
+
+        <!-- グラフ -->
+        <section>
+            <h1 class="text-center text-white">
+                <button id="prev_period" class="text-white">&lt;</button>
+                <span id="graph_title"></span>
+                <button id="next_period" class="text-white">&gt;</button>
+            </h1>
+            <canvas id="chart"></canvas>
+        </section>
+
+        <canvas id="chart_ratio"></canvas>
+    </div>
+    <!-- 週間グラフ -->
+    <script id="week_data" type="application/json">
+        {{ week_chart|safe }}
+    </script>
+    <!-- 比率 -->
+    <script id="week_chart_ratio" type="application/json">
+        {{ week_chart_ratio|safe }}
+    </script>
+    <!-- ラベル -->
+    <script id="week_labels" type="application/json">
+        {{ week_labels|safe }}
+    </script>
+    <script src="{% static 'javascript/summary.js' %}"></script>
+{% endblock content %}

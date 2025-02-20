@@ -1,0 +1,41 @@
+{% extends "app/index.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <img src="{% static 'images/timer-icon.png' %}" alt="タイマーのアイコン" class="clock-image">
+
+  <h1>POMO TIMER</h1>
+  <form action="" method="POST" novalidate>
+    {% csrf_token %}
+    <!-- フォーム全体のエラー(def clean()) -->
+    {% include 'app/error_messages.html' with errors=form.non_field_errors %}
+
+    <div class="login-form">
+      {{ form.username }}
+    </div>
+
+    <!-- cleaned_dataでのエラーメッセージ -->
+    {% include 'app/error_messages.html' with errors=form.username.errors %}
+
+    <div class="login-form">
+      {{ form.password }}
+    </div>
+
+    {% include 'app/error_messages.html' with errors=form.password.errors %}
+
+
+    <button type="submit" class="btn-login">ログイン</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+
+  <div class="center-text">
+    <span class="text">新規登録は</span>
+    <a href="{% url 'signup' %}" class="link">こちら</a>
+  </div>
+</div>
+{% endblock content %}
