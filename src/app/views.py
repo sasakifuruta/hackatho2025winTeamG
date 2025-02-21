@@ -86,7 +86,7 @@ def update_profile(request):
 # ===============
 # グラフ画面
 # ===============
-class LearningSummary(View):
+class LearningSummary(LoginRequiredMixin, View):
     def get(self, request, period=None):
         if period == None:
             # グラフ画面アクセス時は週間グラフを表示
