@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model, login,  update_session_auth_hash
 from django.views.generic import CreateView ,TemplateView
@@ -86,7 +87,7 @@ def update_profile(request):
 # ===============
 # グラフ画面
 # ===============
-class LearningSummary(View):
+class LearningSummary(LoginRequiredMixin, View):
     def get(self, request, period=None):
         if period == None:
             # グラフ画面アクセス時は週間グラフを表示
@@ -107,8 +108,7 @@ class LearningSummary(View):
         # ボタンを押した時
         return self.get_chart(period)
         
-        
-    
+
     # ボタンを押した時の処理
     def get_chart(self, period):
         logs_all, days = self.get_days()
@@ -298,7 +298,6 @@ class LearningSummary(View):
                 'period': year_month,
                 'input_data': input_data,
                 'output_data': output_data,
-                # TODO: 小数点第一位まで
                 'total': round(value['total'] / 60, 1) 
                 })
             chart_ratio.append({

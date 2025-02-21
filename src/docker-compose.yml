@@ -51,7 +51,7 @@ services: #作成したいサービスの列挙
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf
             - /tmp:/tmp  # Django コンテナ内の /tmp/uwsgi.sockを共有
-            - ./static:/code/app/static
+            - ./static:/code/static
         ports:
             - "80:80"
         depends_on:
