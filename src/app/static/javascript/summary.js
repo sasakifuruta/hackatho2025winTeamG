@@ -261,7 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     BtnYear = document.getElementById("btn-year");
-    console.log(BtnYear);
     BtnYear.addEventListener("click", () => {
         currentIdx = 0;
         fetchData("year")
