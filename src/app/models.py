@@ -33,7 +33,7 @@ class Category(models.Model):
     id = models.AutoField(primary_key=True)
     category = models.CharField(max_length=255)
     is_output = models.BooleanField(default=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 

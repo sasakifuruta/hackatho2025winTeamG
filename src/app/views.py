@@ -20,6 +20,7 @@ from django.http import JsonResponse
 from django.db.models.functions import TruncDate
 from django.db.models import Sum
 
+from django.db.models import Q
 
 from .models import User, Timer, Category, Study_log, Goal
 from .forms import LoginForm, SignupForm, AccountChangeForm
@@ -446,6 +447,7 @@ def get_timer_data(request):
     return JsonResponse({"timerData": timer_data})
 
 # カテゴリーを取得する
+@login_required
 def get_categories(request):
     mode = request.GET.get("mode", "input")  # デフォルトは "input"
     user = request.user 
@@ -454,9 +456,15 @@ def get_categories(request):
         is_output = True
     else:
         is_output = False 
-    
-    categories = Category.objects.filter(is_output=is_output, user = user)  # ユーザーのカテゴリを取得
-    
+
+    categories = Category.objects.filter(
+    is_output=is_output,
+    user__in=[user]
+    ) | Category.objects.filter(
+    is_output=is_output,
+    user__isnull=True  # ← user_id IS NULL
+    )
+
     category_list = [{"id": cat.id, "name": cat.category} for cat in categories]
 
     return JsonResponse({"categories": category_list})

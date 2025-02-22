@@ -1,0 +1,56 @@
+[
+    {
+        "model": "app.category", 
+        "pk": 1,
+        "fields": {
+            "category": "ハッカソン",
+            "is_output": true
+        }
+    },
+
+    {
+        "model": "app.category", 
+        "pk": 2,
+        "fields": {
+            "category": "LT会",
+            "is_output": true
+        }
+    },
+    
+    {
+        "model": "app.category", 
+        "pk": 3,
+        "fields": {
+            "category": "記事執筆",
+            "is_output": true
+        }
+    },
+    
+    {
+        "model": "app.category", 
+        "pk": 4,
+        "fields": {
+            "category": "ステップ",
+            "is_output": false
+        }
+    },
+
+    {
+        "model": "app.category", 
+        "pk": 5,
+        "fields": {
+            "category": "講義",
+            "is_output": false
+        }
+    },
+    
+    {
+        "model": "app.category", 
+        "pk": 6,
+        "fields": {
+            "category": "資格の勉強",
+            "is_output": false
+        }
+    }
+
+]

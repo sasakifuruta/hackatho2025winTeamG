@@ -1,17 +1,17 @@
 [
 {
-  "model": "app.user",
+  "model": "app.User",
   "pk": 1,
   "fields": {
     "username": "test_user1",
     "email": "test+01@example.com",
-    "password": "test_user",
+    "password": "pbkdf2_sha256$720000$cK0O2RLAUlmbyvTiuYrSwn$wQU39PXeEsktvA8qyOWcTu1OKG6ElemQlVkDhLQaQSc=",
     "date_joined": "2025-01-22T04:23:02Z",
     "updated_at": "2025-01-22T04:23:02Z"
   }
 },
 {
-  "model": "app.timer",
+  "model": "app.Timer",
   "pk": 1,
   "fields": {
     "user": 1,
@@ -22,7 +22,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 1,
   "fields": {
     "category": "ハッカソン",
@@ -33,7 +33,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 2,
   "fields": {
     "category": "LT会",
@@ -44,7 +44,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 3,
   "fields": {
     "category": "記事執筆",
@@ -55,7 +55,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 4,
   "fields": {
     "category": "ステップ",
@@ -66,7 +66,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 5,
   "fields": {
     "category": "講義",
@@ -77,7 +77,7 @@
   }
 },
 {
-  "model": "app.category",
+  "model": "app.Category",
   "pk": 6,
   "fields": {
     "category": "資格の勉強",
@@ -88,7 +88,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 1,
   "fields": {
     "category": 1,
@@ -100,7 +100,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 2,
   "fields": {
     "category": 1,
@@ -112,7 +112,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 3,
   "fields": {
     "category": 1,
@@ -124,7 +124,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 4,
   "fields": {
     "category": 1,
@@ -136,7 +136,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 5,
   "fields": {
     "category": 1,
@@ -148,7 +148,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 6,
   "fields": {
     "category": 1,
@@ -160,7 +160,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 7,
   "fields": {
     "category": 1,
@@ -172,7 +172,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 8,
   "fields": {
     "category": 1,
@@ -184,7 +184,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 9,
   "fields": {
     "category": 1,
@@ -196,7 +196,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 10,
   "fields": {
     "category": 1,
@@ -208,7 +208,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 11,
   "fields": {
     "category": 1,
@@ -220,7 +220,7 @@
   }
 },
 {
-  "model": "app.study_log",
+  "model": "app.Study_log",
   "pk": 12,
   "fields": {
     "category": 4,
