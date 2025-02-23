@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         interval = setInterval(updateCountDown, 1000); // 1000ミリ秒（1秒）ごとにupdateCountDownを行う
         updateCountDown();
 
+        startButton.disabled = true;
         pauseButton.disabled = false;
         resumeButton.disabled = true;
         resetButton.disabled = false;
@@ -160,6 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
         remainingTime = 0;
         isPaused = false;
 
+        startButton.disabled = false;
         pauseButton.disabled = true;
         resumeButton.disabled = true;
         resetButton.disabled = true;
@@ -194,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
         categorySelect.disabled = false;
         stopRestButton.disabled = true;
         isStudy = true;
-        statusText.textContent = "作業中";
+        statusText.textContent = "準備中";
       })
       .catch((error) => {
         console.error("ダメでした！", error);
@@ -223,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("記録が保存されました:", data);
         window.dispatchEvent(new Event("updateGraph")); // グラフを更新
       })
       .catch((error) => {
@@ -255,22 +256,4 @@ document.addEventListener("DOMContentLoaded", function () {
   resetButton.addEventListener("click", resetTimer);
   stopRestButton.addEventListener("click", stopRestTimer);
   getWorkTime();
-
-  // window.addEventListener("load", function () {
-  //   // 作業時間を取得
-  //   fetch("/home/api/get_study_time/")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       let workTime = data.study || 25;
-  //       workTime = parseInt(workTime, 10);
-  //       let hours = Math.floor(workTime / 60);
-  //       let minutes = workTime % 60;
-  //       countDown.textContent = `${String(hours).padStart(2, "0")}:${String(
-  //         minutes
-  //       ).padStart(2, "0")}:00`;
-  //     })
-  //     .catch((error) => {
-  //       console.error("作業時間の取得に失敗してますよ！！", error);
-  //     });
-  // });
 });
