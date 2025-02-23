@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model, login,  update_session_auth_hash
 from django.views.generic import CreateView ,TemplateView
@@ -33,11 +34,10 @@ def index(request):
     return render(request, 'app/index.html' , {'categories': categories})
 
 # サインアップ
-# 処理後は'home'に遷移
 class Signup(CreateView):
     form_class = SignupForm
     template_name = 'app/signup.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('login')
 
     # サインアップ後にログイン状態を保持、初期カテゴリーを追加（★2025.2.22タラ追記）
     def form_valid(self, form):
@@ -59,9 +59,10 @@ class Login(LoginView):
 
     def form_valid(self, form):
         login(self.request, form.get_user())
-        next_url = self.request.GET.get('next', '/home/')
+        next_url = self.request.GET.get('next')
+        if not next_url:
+            next_url = '/home/'
         return redirect(next_url)
-
 
 
 # アカウント更新   
@@ -69,27 +70,30 @@ class Login(LoginView):
 def update_profile(request):
     if request.method == 'POST':
         form = AccountChangeForm(request.POST, instance=request.user)
-
+        
         if form.is_valid():
-            user = form.save(commit=False)
-
-            user.save()
-            update_session_auth_hash(request, user)
-
+            user = form.save()
+            update_session_auth_hash(request, user)  # パスワード変更後もログイン状態維持
             messages.success(request, "アカウント情報を更新しました。")
             return redirect('account')
+        else:
+            # フォーム全体のエラーメッセージ
+            messages.error(request, "入力内容にエラーがあります。修正してください。")
+            
     else:
         form = AccountChangeForm(instance=request.user)
-        # GET時は初期化して表示
     
-    return render(request, "app/update_profile.html", {"form":form})
+    return render(request, "app/update_profile.html", {
+        "form": form,
+        "messages": messages.get_messages(request)
+    })
 
 
         
 # ===============
 # グラフ画面
 # ===============
-class LearningSummary(View):
+class LearningSummary(LoginRequiredMixin, View):
     def get(self, request, period=None):
         if period == None:
             # グラフ画面アクセス時は週間グラフを表示
@@ -110,8 +114,7 @@ class LearningSummary(View):
         # ボタンを押した時
         return self.get_chart(period)
         
-        
-    
+
     # ボタンを押した時の処理
     def get_chart(self, period):
         logs_all, days = self.get_days()
@@ -274,7 +277,7 @@ class LearningSummary(View):
                     'period': week_range, 
                     'input_data': input_data,
                     'output_data': output_data,
-                    'total': value['total'] // 60,
+                    'total': round(value['total'] / 60, 1),
                     })
                 chart_ratio.append({
                     'week': week_range,
@@ -301,7 +304,7 @@ class LearningSummary(View):
                 'period': year_month,
                 'input_data': input_data,
                 'output_data': output_data,
-                'total': value['total'] // 60
+                'total': round(value['total'] / 60, 1) 
                 })
             chart_ratio.append({
                 'month': year_month,
@@ -335,7 +338,7 @@ class LearningSummary(View):
                 'period': year,
                 'input_data': input_data,
                 'output_data': output_data,
-                'total': value['total'] // 60
+                'total': round(value['total'] / 60, 1),
                 })
                 chart_ratio.append({
                 'year': year,

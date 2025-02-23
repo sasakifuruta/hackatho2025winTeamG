@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (distance <= 0) {
       clearInterval(interval); // タイマーを停止
+      // タイマー音を鳴らす
+      document.getElementById("timer-sound").play();
       if (isStudy) {
         storeElapsedTime();
         startRestTimer();
