@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model, login,  update_session_auth_hash
 from django.views.generic import CreateView ,TemplateView
@@ -38,12 +39,18 @@ class Signup(CreateView):
     template_name = 'app/signup.html'
     success_url = reverse_lazy('login')
 
-    # サインアップ後にログイン状態を保持
+    # サインアップ後にログイン状態を保持、初期カテゴリーを追加（★2025.2.22タラ追記）
     def form_valid(self, form):
-        response = super().form_valid(form)
+        response = super().form_valid(form)# 親クラスの form_valid() を実行
+        user = form.save()  # ユーザーを保存し、インスタンスを取得
         login(self.request, form.save())
+
+        # Category オブジェクトを作成
+        Category.objects.create(user=user, category="ハッカソン", is_output=True)
+        Category.objects.create(user=user, category="ステップ", is_output=False)
+
         return response
-    
+
     
 # ログイン
 class Login(LoginView):
@@ -107,8 +114,7 @@ class LearningSummary(LoginRequiredMixin, View):
         # ボタンを押した時
         return self.get_chart(period)
         
-        
-    
+
     # ボタンを押した時の処理
     def get_chart(self, period):
         logs_all, days = self.get_days()
@@ -298,7 +304,6 @@ class LearningSummary(LoginRequiredMixin, View):
                 'period': year_month,
                 'input_data': input_data,
                 'output_data': output_data,
-                # TODO: 小数点第一位まで
                 'total': round(value['total'] / 60, 1) 
                 })
             chart_ratio.append({
@@ -401,10 +406,11 @@ def get_rest_time(request):
 
 # 累積勉強時間を追加
 @csrf_exempt
+@login_required 
 def store_elapsed_time(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body) #str型であるrequest.body を json.loads() という関数で変換することでdict型（辞書型）にしています
             elapsed = data.get("elapsed", 0)  # 経過時間（分）
             category_id = data.get("category_id")  # カテゴリID
             
@@ -414,7 +420,7 @@ def store_elapsed_time(request):
             category = Category.objects.get(id=category_id)
 
             # Study_logに新しい記録を追加
-            now = timezone.now()
+            now = timezone.localtime()
             study_log = Study_log.objects.create(
                 category=category,
                 studied_time=int(elapsed),
@@ -438,22 +444,22 @@ def get_timer_data(request):
 
     timer_data = {"input": {}, "output": {}}
 
+    #アグリゲーション (集計)を用いて、ユーザーが作成したカテゴリーかつ作成日が今日の日付のもののStudy_logのstudied_timeの合計値を算出する
+    #.aggregate(Sum('studied_time')) の結果は辞書型 (dict) になります。具体的には、こういう形→{"studied_time__sum": 1}　
     for category in categories:
         total_time = Study_log.objects.filter(category=category).aggregate(Sum('studied_time'))["studied_time__sum"] or 0
-        mode = "output" if category.is_output else "input"
+        mode = "output" if category.is_output else "input" #Pythonにおける三項演算子
         timer_data[mode][category.category] = total_time  # カテゴリごとの累積時間を格納
 
     return JsonResponse({"timerData": timer_data})
 
-# カテゴリーを取得する
+# カテゴリーを取得する(プルダウンリストで表示させる時に使う)
+@login_required
 def get_categories(request):
     mode = request.GET.get("mode", "input")  # デフォルトは "input"
     user = request.user 
-    
-    if mode == "output":# "input" の場合 False, "output" の場合 True
-        is_output = True
-    else:
-        is_output = False 
+
+    is_output = True if mode == "output" else False
     
     categories = Category.objects.filter(is_output=is_output, user = user)  # ユーザーのカテゴリを取得
     
@@ -462,14 +468,19 @@ def get_categories(request):
     return JsonResponse({"categories": category_list})
 
 # グラフを更新
+@login_required
 def update_chart(request):
     user = request.user
     categories = Category.objects.filter(user=user)
+    today = timezone.now().date()
+    
 
     timer_data = {"input": {}, "output": {}}
 
+    #アグリゲーション (集計)を用いて、ユーザーが作成したカテゴリーかつ作成日が今日の日付のもののStudy_logのstudied_timeの合計値を算出する
+    #.aggregate(Sum('studied_time')) の結果は辞書型 (dict) になります。具体的には、こういう形→{"studied_time__sum": 1}　
     for category in categories:
-        total_time = Study_log.objects.filter(category=category).aggregate(Sum('studied_time'))["studied_time__sum"] or 0
+        total_time = Study_log.objects.filter(category=category, start_time__date = today).aggregate(Sum('studied_time'))["studied_time__sum"] or 0
         mode = "output" if category.is_output else "input"
         timer_data[mode][category.category] = total_time  # カテゴリごとの累積時間を格納
     
@@ -508,14 +519,14 @@ def add_category(request):
 
             if not category_name:
                 return JsonResponse({"success": False, "message": "カテゴリー名が空です。"}, status=400)
-
-            Category.objects.create(user=request.user, category=category_name, is_output=is_output)
-            return JsonResponse({"success": True, "message": "カテゴリーが追加されました！"})
+            
+            category = Category.objects.create(user=request.user, category=category_name, is_output=is_output)
+            return JsonResponse({"success": True, "message": "カテゴリーが追加されました！", "id": category.id})
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "リクエストが不正です。"}, status=400)
         except Exception as e:
-           return JsonResponse({"success": False, "message": str(e)}, status=500)
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
 
     return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
 
@@ -529,20 +540,20 @@ def save_work_time(request):
             user = request.user
 
             if study_time is None:
-                return JsonResponse({"success": False, "message": "勉強時間が指定されていません。"}, status=400)
+                return JsonResponse({"success": False, "message": "作業時間が指定されていません。"}, status=400)
             
             # ユーザーのTimerデータを取得または作成
             if not Timer.objects.filter(user=user).exists():
                 Timer.objects.create(user=user,study = study_time)
-                message = "勉強時間の設定が変更されました！"
+                message = "作業時間の設定が作成されました！"
             else:
                 Timer.objects.filter(user=user).update(study = study_time,updated_at=timezone.now())
-                message = "勉強時間の設定が作成されました！"
+                message = "作業時間の設定が変更されました！"
 
             return JsonResponse({"success": True, "message": message})
         
         except Exception as e:
-           return JsonResponse({"success": False, "message": str(e)}, status=500)
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
 
     return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
 
@@ -561,15 +572,15 @@ def save_rest_time(request):
             # ユーザーのTimerデータを取得または作成
             if not Timer.objects.filter(user=user).exists():
                 Timer.objects.create(user=user,rest = rest_time)
-                message = "休憩時間の設定が変更されました！"
+                message = "休憩時間の設定が作成されました！"
             else:
                 Timer.objects.filter(user=user).update(rest = rest_time,updated_at=timezone.now())
-                message = "休憩時間の設定が作成されました！"
+                message = "休憩時間の設定が変更されました！"
 
             return JsonResponse({"success": True, "message": message})
         
         except Exception as e:
-           return JsonResponse({"success": False, "message": str(e)}, status=500)
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
 
     return JsonResponse({"success": False, "message": "POSTリクエストのみ受け付けています。"}, status=405)
 
@@ -600,7 +611,6 @@ def delete_category(request):
             return JsonResponse({"success": True})
 
         except Exception as e:
-            logger.error(f"Category delete error: {str(e)}")
             return JsonResponse({"success": False, "error": str(e)})
 
-    return JsonResponse({"success": False, "error": "Invalid request"})
+    return JsonResponse({"success": False, "error": "POSTリクエストのみ受け付けています。"})
