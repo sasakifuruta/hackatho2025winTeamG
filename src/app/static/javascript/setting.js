@@ -6,13 +6,17 @@ document
     fetch("/setting/api/save_work_time/", {
       method: "POST",
       headers: {
-        "Content-Type": "application",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ study: selectedTime }),
     })
       .then((response) => response.json())
       .then((data) => {
-        alert("作業時間を " + selectedTime + " 分に設定しました！");
+        if (data.success) {
+          alert(data.message);
+        } else {
+          alert("エラー:" + data.message);
+        }
       })
       .catch((error) => console.error("作業時間の変更に失敗しました", error));
   });
@@ -25,13 +29,17 @@ document
     fetch("/setting/api/save_rest_time/", {
       method: "POST",
       headers: {
-        "Content-Type": "application",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ rest: selectedTime }),
     })
       .then((response) => response.json())
       .then((data) => {
-        alert("休憩時間を " + selectedTime + " 分に設定しました！");
+        if (data.success) {
+          alert(data.message);
+        } else {
+          alert("エラー:" + data.message);
+        }
       })
       .catch((error) => console.error("休憩時間の変更に失敗しました", error));
   });
@@ -62,6 +70,32 @@ document.getElementById("add-category").addEventListener("click", function () {
       if (data.success) {
         alert("カテゴリーが追加されました！");
         document.getElementById("category-name").value = ""; // 入力フィールドをクリア
+        // カテゴリーリストに追加
+        const categoryList = isOutput
+          ? document.querySelector(".output-category-list")
+          : document.querySelector(".input-category-list");
+
+        // <div> 要素（カテゴリーのアイテム）を作成
+        // data.id（サーバーから返されたカテゴリーの ID）を data-id 属性として保存
+        const newCategory = document.createElement("div");
+        newCategory.classList.add("category-item");
+        newCategory.dataset.id = data.id; // 返却されたIDを設定
+        newCategory.innerHTML = `
+        <p>${categoryName}</p>
+        <button class="delete-category">削除</button>
+      `;
+
+        // 削除ボタンのイベントリスナーを追加
+        newCategory
+          .querySelector(".delete-category")
+          .addEventListener("click", function () {
+            deleteCategory(newCategory, data.id);
+          });
+
+        categoryList.appendChild(newCategory); //作成した newCategory（カテゴリーの <div>）をリストに追加
+
+        // モーダルを閉じる
+        document.querySelector("#categoryModal .btn-close").click();
       } else {
         alert("カテゴリーの追加に失敗しました: " + data.message);
       }
@@ -87,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": getCSRFToken(),
+          "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify({ id: categoryId }),
       })
@@ -96,8 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (data.success) {
             categoryItem.remove();
           } else {
-            console.error("削除エラー：", data.error);
-            alert("削除に失敗しました");
+            alert("削除に失敗しました：" + data.error);
           }
         });
     });
@@ -121,8 +154,22 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// CSRF トークン取得関数
-function getCSRFToken() {
-  let csrfToken = document.querySelector("input[name=csrfmiddlewaretoken]");
-  return csrfToken ? csrfToken.value : "";
+function deleteCategory(categoryElement, categoryId) {
+  fetch("/setting/api/delete_category/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken"),
+    },
+    body: JSON.stringify({ id: categoryId }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        categoryElement.remove();
+      } else {
+        alert("削除に失敗しました: " + data.error);
+      }
+    })
+    .catch((error) => console.error("カテゴリーの削除に失敗しました:", error));
 }

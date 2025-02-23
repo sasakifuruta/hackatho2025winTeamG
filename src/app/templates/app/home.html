@@ -1,6 +1,7 @@
 {% extends "app/index.html" %}
 {% load static %}
 {% block content %}
+    <div class="home-container">
     <div class="container">
         <audio id="timer-sound" src="{% static 'sound/timer-sound.mp3' %}"></audio>
         <section class="week">
@@ -9,10 +10,6 @@
                 <div class="text-column">
                     <span id="status-text" class="status">準備中</span>
                     <p id="countdown">--:--:--</p>
-                    <button id="start-timer">作業開始</button>
-                    <button id="pause-timer" disabled>一時停止</button>
-                    <button id="resume-timer" disabled>再開</button>
-                    <button id="reset-timer" disabled>リセット</button>
                     <script src="{% static 'javascript/timer.js' %}"></script>
                     <div class="mode-select">
                         <label for="mode-select"></label>
@@ -28,19 +25,37 @@
                         </select>
                         <script src="{% static 'javascript/category.js' %}"></script>
                     </div>
-                    <button id="stop-rest-timer" disabled>休憩終了</button>
+                    <div class="button-column">
+                        <button id="start-timer" class="circle size">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button id="pause-timer" disabled class="circle size">
+                            <i class="fa-solid fa-pause"></i>
+                        </button>
+                        <button id="resume-timer" disabled class="circle size">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                        <button id="reset-timer" disabled class="circle size">
+                            <i class="fa-solid fa-stop"></i>
+                        </button>
+                        <button id="stop-rest-timer" disabled class="circle size">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
                 <!-- 右側のグラフ -->
                 <div class="chart-column">
-                    <a href="{% url 'summary' %}" class="icon">
-                        <i class="fa-solid fa-chart-simple"></i>
-                    </a>
-                    <a href="{% url 'setting' %}" class="icon">
-                        <i class="fa-solid fa-gear"></i>
-                    </a>
-                    <a href="{% url 'account' %}" class="icon">
-                        <i class="fa-solid fa-user"></i>
-                    </a>
+                    <div class="icon-column">
+                        <a href="{% url 'summary' %}" class="icon">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </a>
+                        <a href="{% url 'setting' %}" class="icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </a>
+                        <a href="{% url 'account' %}" class="icon">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    </div>
                     <p class="text-center">{{ today }}</p>
                     <canvas id="chart-week" class="graph"></canvas>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

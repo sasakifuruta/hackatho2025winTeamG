@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return response.json();
       })
       .then((data) => {
-        console.log("取得したカテゴリ一覧:", data); // ← ここを追加！
         categorySelect.innerHTML = ""; // 既存のオプションをクリア
         data.categories.forEach((category) => {
           let option = document.createElement("option");

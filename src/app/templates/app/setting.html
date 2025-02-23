@@ -1,61 +1,129 @@
 {% extends "app/index.html" %}
 {% load static %}
 {% block content %}
-    <div class="container">
+    <div class="setting-container">
         <a href="{% url 'home' %}" class="icon">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
-        <h2>作業時間の設定</h2>
-        <label for="work-time">作業時間を選択：</label>
-        <select id="work-time">
-            <option value="1">1分</option>
-            <option value="10">10分</option>
-            <option value="25" selected>25分</option>
-            <option value="40">40分</option>
-            <option value="60">60分</option>
-        </select>
-        <button id="save-work-time">保存</button>
-        <h2>休憩時間の設定</h2>
-        <label for="rest-time">休憩時間を選択：</label>
-        <select id="rest-time">
-            <option value="1">1分</option>
-            <option value="5" selected>5分</option>
-            <option value="10">10分</option>
-            <option value="30">30分</option>
-        </select>
-        <button id="save-rest-time">保存</button>
-        <h2>カテゴリーの追加</h2>
-        <label for="category-name">カテゴリー名：</label>
-        <input type="text" id="category-name" placeholder="新しいカテゴリー名">
-        <div>
-            <input type="radio"
-                   id="input-mode"
-                   name="category-mode"
-                   value="input"
-                   checked>
-            <label for="input-mode">Input</label>
-            <input type="radio" id="output-mode" name="category-mode" value="output">
-            <label for="output-mode">Output</label>
+        <div class="work-column">
+            <div class="left-work-column">
+                <label for="work-time">作業時間</label>
+            </div>
+            <div class="right-work-column">
+                <select id="work-time">
+                    <option value="1">1分</option>
+                    <option value="10">10分</option>
+                    <option value="25" selected>25分</option>
+                    <option value="40">40分</option>
+                    <option value="60">60分</option>
+                </select>
+                <button id="save-work-time">保存</button>
+            </div>
         </div>
-        <button id="add-category">カテゴリーを追加</button>
-        <div calss="category-container">
-            <div class="category-list">
-                <h3>Input</h3>
-                {% for input_category in input_categories %}
-                    <div class="category-item" data-id="{{ input_category.id }}">
-                        <p>{{ input_category.category }}</p>
-                        <button class="delete-category">削除</button>
+        <div class="rest-column">
+            <div class="left-rest-column">
+                <label for="rest-time">休憩時間</label>
+            </div>
+            <div class="right-rest-column">
+                <select id="rest-time">
+                    <option value="1">1分</option>
+                    <option value="5" selected>5分</option>
+                    <option value="10">10分</option>
+                    <option value="30">30分</option>
+                </select>
+                <button id="save-rest-time">保存</button>
+            </div>
+        </div>
+        <div class="category-column">
+            <div class="lett-category-column">
+                <p>カテゴリー</p>
+            </div>
+            <div class="right-category-column">
+                <button type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#categoryModal">作成</button>
+                <!-- Bootstrap モーダル -->
+                <div class="modal fade"
+                     id="categoryModal"
+                     tabindex="-1"
+                     aria-labelledby="categoryModalLabel"
+                     aria-hidden="true"
+                     data-bs-backdrop="static"
+                     data-bs-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="categoryModalLabel">カテゴリー作成</h3>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="category-name">名称</label>
+                                <input type="text"
+                                       id="category-name"
+                                       class="form-control"
+                                       placeholder="新しいカテゴリー名">
+                                <div class="mt-3">
+                                    <input type="radio"
+                                           id="input-mode"
+                                           name="category-mode"
+                                           value="input"
+                                           checked>
+                                    <label for="input-mode">インプット</label>
+                                    <input type="radio" id="output-mode" name="category-mode" value="output">
+                                    <label for="output-mode">アウトプット</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                                <button type="button" id="add-category" class="btn btn-primary">作成</button>
+                            </div>
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="category-container">
+            <div class="category-list">
+                <div class="input-category">
+                    <p>インプット</p>
+                </div>
+                <div class="input-category-list">
+                    {% for input_category in input_categories %}
+                        <div class="category-item" data-id="{{ input_category.id }}">
+                            <p>
+                                {% if input_category.category|length > 5 %}
+                                    {{ input_category.category|slice:":5" }}...
+                                {% else %}
+                                    {{ input_category.category }}
+                                {% endif %}
+                            </p>
+                            <button class="delete-category">削除</button>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="category-list">
-                <h3>Output</h3>
-                {% for output_category in output_categories %}
-                    <div class="category-item" data-id="{{ output_category.id }}">
-                        <p>{{ output_category.category }}</p>
-                        <button class="delete-category">削除</button>
-                    </div>
-                {% endfor %}
+                <div class="output-category">
+                    <p>アウトプット</p>
+                </div>
+                <div class="output-category-list">
+                    {% for output_category in output_categories %}
+                        <div class="category-item" data-id="{{ output_category.id }}">
+                            <p>
+                                {% if output_category.category|length > 5 %}
+                                    {{ output_category.category|slice:":5" }}...
+                                {% else %}
+                                    {{ output_category.category }}
+                                {% endif %}
+                            </p>
+                            <button class="delete-category">削除</button>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
