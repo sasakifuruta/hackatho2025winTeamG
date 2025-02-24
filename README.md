@@ -34,8 +34,12 @@ docker comspose up -d
 docker compose ps
 - Djangoコンテナに入る
 docker exec -it Django bash
+-　静的ファイルを収集
+ python manage.py collectstatic --noinput
 - マイグレーション実行
 python manage.py migrate
 - 初期データ投入
-python manage.py loaddata fixture_01.json
-- ブラウザで　localhost:8000にアクセス
+python manage.py loaddata fixture_02.json
+- ブラウザで　localhost にアクセス
+
+
