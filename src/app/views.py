@@ -95,9 +95,11 @@ def update_profile(request):
 # ===============
 class LearningSummary(LoginRequiredMixin, View):
     def get(self, request, period=None):
+        user = request.user
         if period == None:
+            # ログインしているユーザを取得
             # グラフ画面アクセス時は週間グラフを表示
-            logs_all, days = self.get_days()
+            logs_all, days = self.get_days(user)
             day_logs = self.get_day_logs(logs_all, days)
             week_data = self.get_weekly_data(days, day_logs)
             week_chart, week_chart_ratio,labels = self.conv_week_data(week_data)
@@ -112,12 +114,12 @@ class LearningSummary(LoginRequiredMixin, View):
                     'week_labels':json.dumps(labels)
                     })
         # ボタンを押した時
-        return self.get_chart(period)
+        return self.get_chart(period, user)
         
 
     # ボタンを押した時の処理
-    def get_chart(self, period):
-        logs_all, days = self.get_days()
+    def get_chart(self, period, user):
+        logs_all, days = self.get_days(user)
         if period == 'week':
             day_logs = self.get_day_logs(logs_all, days)
             week_data = self.get_weekly_data(days, day_logs)
@@ -144,9 +146,9 @@ class LearningSummary(LoginRequiredMixin, View):
                             )
     
     
-    def get_days(self):
+    def get_days(self, user):
         # 日付一覧を取得
-        logs_all = Study_log.objects.all()
+        logs_all = Study_log.objects.filter(category__user=user)
         days = logs_all.annotate(
                 day = TruncDate('start_time')
                 ).values_list('day', flat=True).distinct()
