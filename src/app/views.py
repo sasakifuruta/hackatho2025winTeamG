@@ -95,9 +95,11 @@ def update_profile(request):
 # ===============
 class LearningSummary(LoginRequiredMixin, View):
     def get(self, request, period=None):
+        user = request.user
         if period == None:
+            # ログインしているユーザを取得
             # グラフ画面アクセス時は週間グラフを表示
-            logs_all, days = self.get_days()
+            logs_all, days = self.get_days(user)
             day_logs = self.get_day_logs(logs_all, days)
             week_data = self.get_weekly_data(days, day_logs)
             week_chart, week_chart_ratio,labels = self.conv_week_data(week_data)
@@ -112,12 +114,12 @@ class LearningSummary(LoginRequiredMixin, View):
                     'week_labels':json.dumps(labels)
                     })
         # ボタンを押した時
-        return self.get_chart(period)
+        return self.get_chart(period, user)
         
 
     # ボタンを押した時の処理
-    def get_chart(self, period):
-        logs_all, days = self.get_days()
+    def get_chart(self, period, user):
+        logs_all, days = self.get_days(user)
         if period == 'week':
             day_logs = self.get_day_logs(logs_all, days)
             week_data = self.get_weekly_data(days, day_logs)
@@ -144,9 +146,9 @@ class LearningSummary(LoginRequiredMixin, View):
                             )
     
     
-    def get_days(self):
+    def get_days(self, user):
         # 日付一覧を取得
-        logs_all = Study_log.objects.all()
+        logs_all = Study_log.objects.filter(category__user=user)
         days = logs_all.annotate(
                 day = TruncDate('start_time')
                 ).values_list('day', flat=True).distinct()
@@ -175,7 +177,11 @@ class LearningSummary(LoginRequiredMixin, View):
             input_total = sum(log.studied_time for log in inputs)
             
             year_month = day.strftime('%Y/%m')
-            week_num = day.isocalendar().week
+            
+            # 月の最初の日が属する週番号
+            first_week = day.replace(day=1).isocalendar().week
+            # dayがその月の何周目かを取得する
+            week_num = (day.isocalendar().week - first_week) + 1
             week_logs[f'{year_month}の{week_num}週目'] = [year_month, week_num, input_total, output_total]
         return week_logs
 
@@ -279,10 +285,11 @@ class LearningSummary(LoginRequiredMixin, View):
                     'output_data': output_data,
                     'total': round(value['total'] / 60, 1),
                     })
+                pprint(f"value['total']>>{value['total']}")
                 chart_ratio.append({
                     'week': week_range,
-                    'input_ratio': sum(input_data) * 100 / value['total'],
-                    'output_ratio': sum(output_data) * 100 / value['total']
+                    'input_ratio': sum(input_data) * 100 / value['total'] if value['total'] != 0 else 0,
+                    'output_ratio': sum(output_data) * 100 / value['total'] if value['total'] != 0 else 0
                     })
         return chart_data, chart_ratio, labels
     
@@ -297,6 +304,7 @@ class LearningSummary(LoginRequiredMixin, View):
             input_data = [0 for _ in range(weeks)]
             output_data = [0 for _ in range(weeks)]
             for week in value['weeks']:
+                # 月での週番号=i
                 i = week[0]-1
                 input_data[i] = week[1]
                 output_data[i] = week[2]
@@ -308,8 +316,8 @@ class LearningSummary(LoginRequiredMixin, View):
                 })
             chart_ratio.append({
                 'month': year_month,
-                'input_ratio': sum(input_data) * 100 / value['total'],
-                'output_ratio': sum(output_data) * 100 / value['total']
+                'input_ratio': sum(input_data) * 100 / value['total'] if value['total'] != 0 else 0,
+                'output_ratio': sum(output_data) * 100 / value['total'] if value['total'] != 0 else 0
                 })
         return chart_data, chart_ratio
     
@@ -342,8 +350,8 @@ class LearningSummary(LoginRequiredMixin, View):
                 })
                 chart_ratio.append({
                 'year': year,
-                'input_ratio': sum(input_data) * 100 / value['total'],
-                'output_ratio': sum(output_data) * 100 / value['total']
+                'input_ratio': sum(input_data) * 100 / value['total'] if value['total'] != 0 else 0,
+                'output_ratio': sum(output_data) * 100 / value['total'] if value['total'] != 0 else 0
                 })
         return chart_data, chart_ratio
 
