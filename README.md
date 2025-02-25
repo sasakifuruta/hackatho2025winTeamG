@@ -33,7 +33,7 @@ docker comspose up -d
 -　コンテナが起動したか確認（Django,MySQL,Nginx コンテナの３つ）
 docker compose ps
 - Djangoコンテナに入る
-docker exec -it Django bash
+docker exec -it app bash
 -　静的ファイルを収集
  python manage.py collectstatic --noinput
 - マイグレーション実行
