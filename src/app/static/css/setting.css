@@ -2,6 +2,10 @@
   width: 300px;
 }
 
+.icon {
+  color: var(--white);
+}
+
 .work-column,
 .rest-column,
 .category-column {
@@ -44,6 +48,7 @@
 .category-list p {
   font-size: var(--heading3);
   margin: 5px;
+  color: var(--white);
 }
 
 .category-item {
@@ -103,5 +108,9 @@ label {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  font-size: var(--heading1);
+}
+
+.left-category-column {
+  font-size: var(--heading2);
+  color: var(--white);
 }

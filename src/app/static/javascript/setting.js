@@ -75,13 +75,18 @@ document.getElementById("add-category").addEventListener("click", function () {
           ? document.querySelector(".output-category-list")
           : document.querySelector(".input-category-list");
 
+        const truncatedCategoryName =
+          categoryName.length > 5
+            ? categoryName.substring(0, 5) + "..."
+            : categoryName;
+
         // <div> 要素（カテゴリーのアイテム）を作成
         // data.id（サーバーから返されたカテゴリーの ID）を data-id 属性として保存
         const newCategory = document.createElement("div");
         newCategory.classList.add("category-item");
         newCategory.dataset.id = data.id; // 返却されたIDを設定
         newCategory.innerHTML = `
-        <p>${categoryName}</p>
+        <p>${truncatedCategoryName}</p>
         <button class="delete-category">削除</button>
       `;
 
