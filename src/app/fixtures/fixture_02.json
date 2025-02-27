@@ -5,7 +5,7 @@
   "fields": {
     "username": "test_user1",
     "email": "test+01@example.com",
-    "password": "test_user",
+    "password": "pbkdf2_sha256$720000$XrGGav1ligM6NwuQeNNQw5$hskKYrnXRJTJ8Jrd99LnIDnFf7hdNC+J1/x6V2o+37U=",
     "date_joined": "2025-01-22T04:23:02Z",
     "updated_at": "2025-01-22T04:23:02Z"
   }
